@@ -290,7 +290,7 @@ function attachNasc(options = {}) {
 // SSR middleware creator: fills [na-bind] and input[name] from handler.mount()
 function createSsrMiddleware({ handlers, rootDir }) {
   return async function handleSSR(req, res, next) {
-    const page = req.path === "/" ? "/user.html" : req.path;
+    const page = req.path === "/" ? "/app.html" : req.path;
     try {
       const htmlPath = rootDir ? path.join(rootDir, page) : path.join(process.cwd(), page);
       let html = await fs.readFile(htmlPath, "utf-8");
