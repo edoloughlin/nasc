@@ -1,0 +1,16 @@
+remote_theme: just-the-docs/just-the-docs
+color_scheme: light
+search_enabled: true
+heading_anchors: true
+title: "Nasc Documentation"
+description: "Build reactive HTML frontends backed by server-side state."
+permalink: pretty
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+nav_sort: case_insensitive
+exclude:
+  - ANNOYANCES.md
+  - ROADMAP.md
+  - sse-vs-websockets.md
+  - initial-sketch/
