@@ -305,8 +305,13 @@ function createSsrMiddleware({ handlers, rootDir }) {
         for (const [prop, value] of Object.entries(initialState)) {
           const bindRegex = new RegExp(`(<[^>]+na-bind=\"${prop}\"[^>]*>)[^<]*(</[^>]+>)`, "g");
           html = html.replace(bindRegex, `$1${String(value)}$2`);
-          const inputRegex = new RegExp(`(<input[^>]+name=\"${prop}\"[^>]*>)`, "g");
-          html = html.replace(inputRegex, `$1 value=\"${String(value)}\"`);
+          const inputRegex = new RegExp(`(<input[^>]*name=\"${prop}\"[^>]*)(/?>)`, "gi");
+          html = html.replace(inputRegex, (match, start, end) => {
+            if (/\bvalue=/.test(start)) {
+              return `${start.replace(/value=\"[^\"]*\"/i, `value=\"${String(value)}\"`)}${end}`;
+            }
+            return `${start} value=\"${String(value)}\"${end}`;
+          });
         }
       }
       res.send(html);
