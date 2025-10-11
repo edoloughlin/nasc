@@ -38,7 +38,20 @@ Note that this structure is highly likely to change.
 
 ## Getting Started
 
+This repo is a pnpm workspace (monorepo). Install dependencies at the repo root, then run the demo.
+
+- Install deps (root): `pnpm i`
+- Run demo: `cd demo && pnpm start` (or `pnpm --filter nasc-demo start`)
+
 For a full, guided example (run + read + extend), see `demo/README.md`.
+
+### Workspace layout and dependency resolution
+
+- Workspace packages: `packages/*` and `demo/` (see `pnpm-workspace.yaml`).
+- Server code under `packages/nasc-server` is what `require()`s runtime deps like `express` and `ws`.
+- Keep server runtime deps at the root so they resolve for `packages/nasc-server`.
+  - Add root deps: `pnpm add express ws -w`
+  - Add demo-only deps: `pnpm add <pkg> --filter nasc-demo` (use `-D` for dev-only)
 
 ## How it Works
 
@@ -49,7 +62,7 @@ Transport selection
 
 * Default: SSE.
 * Force via code: `connect({ transport: 'ws' })` or `connect({ transport: 'sse' })`.
-* Force via URL for testing: append `?transport=ws` or `?transport=sse` to the page URL (e.g., `/user.html?transport=ws`).
+* Force via URL for testing: append `?transport=ws` or `?transport=sse` to the page URL (e.g., `/app.html?transport=ws`).
 
 3. When you interact with the page (e.g., submit a form), the client sends an event to the server.
 4. The server processes the event in a handler, computes a state change, and calculates a diff.

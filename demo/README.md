@@ -19,11 +19,11 @@ Prerequisites
 - Node 18+
 - pnpm or npm
 
-Install and run (from the repo root):
+Install and run (pnpm workspace):
 
 ```
+pnpm i        # install at the repo root (workspace)
 cd demo
-pnpm i        # or: npm i
 pnpm start    # or: npm start
 ```
 
@@ -38,6 +38,11 @@ WebSocket dependency note
 - WebSocket support is optional. If the `ws` package is not available to `packages/nasc-server`, the server runs in SSE-only mode and logs a notice.
 - To enable WebSocket, install `ws` at the repo root (so it’s resolvable from `packages/nasc-server`) — e.g. run `pnpm i` at the root, or add `ws` as a dependency in `packages/nasc-server` within a workspace setup.
 - Installing `ws` only in `demo` is not sufficient due to Node’s module resolution (the server code requiring `ws` lives under `packages/nasc-server`).
+
+Workspace tips
+- Add root runtime deps (used by `packages/nasc-server`): `pnpm add express ws -w`
+- Add a dependency just for the demo: `pnpm add <pkg> --filter nasc-demo` (use `-D` for dev-only)
+- You can also run the demo without `cd` using filters: `pnpm --filter nasc-demo start`
 
 
 ## How It Works (end-to-end)
