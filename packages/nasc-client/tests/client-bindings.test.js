@@ -9,7 +9,14 @@ function setupDom(bodyHtml = '') {
   const { window, document } = createTestWindow(bodyHtml);
   globalThis.window = window;
   globalThis.document = document;
-  globalThis.navigator = window.navigator;
+  // Some environments expose a read-only global `navigator` (getter only).
+  // Guard assignment to avoid TypeErrors while still providing a navigator when possible.
+  try {
+    const desc = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+    if (!desc || (('writable' in desc && desc.writable) || desc.set || desc.configurable)) {
+      globalThis.navigator = window.navigator;
+    }
+  } catch {}
   globalThis.location = window.location;
   globalThis.CustomEvent = function CustomEvent(type, detail) { this.type = type; this.detail = detail?.detail; };
   globalThis.HTMLElement = Element;
