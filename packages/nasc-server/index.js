@@ -1,7 +1,13 @@
 const { MemoryStore, applyEvent } = require("./engine");
 const path = require("path");
 const fs = require("fs").promises;
-const { WebSocketServer } = require("ws");
+// Optional WebSocket support: lazily require 'ws' if available
+let WebSocketServer;
+try {
+  ({ WebSocketServer } = require("ws"));
+} catch {
+  WebSocketServer = undefined;
+}
 
 // Shared processor factory to be used by both WS and SSE paths
 function createProcessor(handlers, store, options = {}) {
@@ -190,16 +196,24 @@ function attachNasc(options = {}) {
   const store = options.store || new MemoryStore();
   const processMessage = createProcessor(handlers, store, { schemaProvider });
 
+  // Helper: obtain express or report helpful error
+  function getExpress() {
+    try { return require('express'); }
+    catch {
+      throw new Error("[Nasc] 'express' not found. Install it at the repo root so packages/nasc-server can resolve it (e.g., run 'pnpm i' at the root).");
+    }
+  }
+
   // JSON body parser for event POSTs
-  if (app.use) app.use(require("express").json());
+  if (app.use) app.use(getExpress().json());
 
   // Serve client library
   const clientDir = path.resolve(__dirname, "../nasc-client");
-  if (app.use) app.use(require("express").static(clientDir));
+  if (app.use) app.use(getExpress().static(clientDir));
 
   // Optionally serve demo/app static root
   const rootDir = options.ssr && options.ssr.rootDir ? options.ssr.rootDir : null;
-  if (rootDir && app.use) app.use(require("express").static(rootDir));
+  if (rootDir && app.use) app.use(getExpress().static(rootDir));
 
   // SSE endpoints
   const sseClients = new Map(); // clientId -> { res, keepalive }
@@ -251,9 +265,17 @@ function attachNasc(options = {}) {
     } catch {}
   }
 
-  // WebSocket
-  const wss = new WebSocketServer({ server });
-  NascServer(wss, handlers, { store, schemaProvider });
+  // WebSocket (optional)
+  if (WebSocketServer) {
+    try {
+      const wss = new WebSocketServer({ server });
+      NascServer(wss, handlers, { store, schemaProvider });
+    } catch (e) {
+      console.warn('[Nasc] WebSocket init failed; continuing with SSE only:', e && e.message);
+    }
+  } else {
+    console.log('[Nasc] ws package not found; SSE-only mode enabled');
+  }
 
   // SSR middleware
   if (options.ssr) {

@@ -4,9 +4,11 @@ Nasc means 'bind' in the Irish language.
 
 Nasc is a proof-of-concept framework for building reactive user interfaces with plain HTML and a server-driven backend. By default it streams server→client patches over Server‑Sent Events (SSE) and sends client→server events via HTTP; WebSockets are also supported for features that need bidirectional, high-frequency updates.
 
+*Note:* this is currently a PoC. There is currently no packaged version of this project.
+
 ## Project Philosophy
 
-The core idea is to keep the client as simple as possible. The server is the source of truth for both state and logic. The client sends events to the server, and the server responds with fine-grained DOM patches.
+Taking inspiration from HTMX, the core idea is to keep the client as simple as possible. The server is the source of truth for both state and logic. The client sends events to the server, and the server responds with fine-grained state updates. These are sent over SSE (or WS) in a similar fashion to Datastar, but sending arbitrary HTML is not supported by design.
 
 This approach has several potential benefits:
 
@@ -14,9 +16,13 @@ This approach has several potential benefits:
 * **Backend-driven logic:** All business logic lives on the server, where it can be written in any language.
 * **Simple HTML:** The HTML is just plain HTML with a few special attributes.
 
+The project currently supports ExpressJS backends, but others may be accomodated in future, potentially including Java, Python or PHP.
+
 ## Project Structure
 
 The project is organized into two main parts: the `packages` and the `demo`.
+
+Note that this structure is highly likely to change.
 
 * `packages/`: Contains the reusable parts of the Nasc framework.
   * `nasc-client/`: The client-side JavaScript library (`nasc.js`). This is the only file you need to include in your HTML.
@@ -40,6 +46,7 @@ For a full, guided example (run + read + extend), see `demo/README.md`.
 2. The `nasc.js` client connects to the server via SSE by default. You can opt into WebSockets per page or feature if needed.
 
 Transport selection
+
 * Default: SSE.
 * Force via code: `connect({ transport: 'ws' })` or `connect({ transport: 'sse' })`.
 * Force via URL for testing: append `?transport=ws` or `?transport=sse` to the page URL (e.g., `/user.html?transport=ws`).
@@ -52,18 +59,22 @@ Transport selection
 ## Project Scope
 
 Core responsibilities
+
 * Transport and rendering: SSE/WS streaming, DOM patching (`bindUpdate`), keyed list diffing, SSR middleware, and auto‑connect.
 * Protocol and validation: simple, typed event→diff→patch flow; push schema on mount; best‑effort client validation with clear, dev‑only errors.
 * Persistence seam: a tiny `Store` interface (`load(type,id)`, `persist(type,id,diff,full)`) that apps or adapters can implement.
 
 Intentionally out of scope
+
 * Full mapping/ORM layer for nested objects and arbitrary relations, migrations, indexes, and vendor‑specific features. Teams should use an existing ORM (Prisma/Drizzle/TypeORM/Knex) and plug it into the `Store` seam.
 
 Reference adapters (for demos and small apps)
+
 * `SqliteStore` (JSON column): simplest persistence with one table per type storing the full object as JSON.
 * `SqliteMappedStore` (normalized demo): creates normalized tables for scalars and 1:N arrays (full‑replace writes). This is an example, not a full mapping DSL.
 
 Bring your own ORM
+
 * Implement a thin `Store` bridge to your ORM: wrap each event in a transaction in `persist()`, and return plain JS objects in `load()`.
 
 ## Typed Bindings (optional)
@@ -90,9 +101,9 @@ See `docs/schemas.md` for a deeper look at how schemas are structured, pushed by
 | `na-type` (optional) | Any / `<template>`    | Hint the schema type for validation (e.g., `Todo`).           |
 
 Notes
-- Typed bind shorthand: `na-bind="Type:prop"` explicitly targets a type for validation; patch routing still uses the nearest `na-instance`.
-- Inputs with `name="prop"` are auto‑updated by patches for `prop` within the same `na-instance`.
-- For lists, place `na-each` and `na-key` on a `<template>` inside a container bound with `na-bind="items"`.
+* Typed bind shorthand: `na-bind="Type:prop"` explicitly targets a type for validation; patch routing still uses the nearest `na-instance`.
+* Inputs with `name="prop"` are auto‑updated by patches for `prop` within the same `na-instance`.
+* For lists, place `na-each` and `na-key` on a `<template>` inside a container bound with `na-bind="items"`.
 
 ### Minimal Example
 

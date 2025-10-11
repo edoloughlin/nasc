@@ -8,11 +8,9 @@ This demo shows how to build a real app with Nasc using plain HTML, a tiny clien
 - Schema push + client-side validation overlay for developer feedback
 - Optional SQLite persistence (JSON-column or normalized mapping)
 
-You can run the two pages independently or open the combined view:
+Open the app at:
 
-- User only: http://localhost:3000/user.html
-- Todos only: http://localhost:3000/todo.html
-- Combined: http://localhost:3000/app.html
+- http://localhost:3000/app.html
 
 
 ## Quick Start
@@ -29,12 +27,17 @@ pnpm i        # or: npm i
 pnpm start    # or: npm start
 ```
 
-Open a browser to one of the URLs above. The client auto-connects and streams patches from the server.
+Open a browser to http://localhost:3000/app.html. The client auto-connects and streams patches from the server.
 
 Transport selection
 - SSE is the default.
 - Switch via query param: append `?transport=ws` or `?transport=sse`.
 - The combined demo (`app.html`) has a small UI picker at the bottom.
+
+WebSocket dependency note
+- WebSocket support is optional. If the `ws` package is not available to `packages/nasc-server`, the server runs in SSE-only mode and logs a notice.
+- To enable WebSocket, install `ws` at the repo root (so it’s resolvable from `packages/nasc-server`) — e.g. run `pnpm i` at the root, or add `ws` as a dependency in `packages/nasc-server` within a workspace setup.
+- Installing `ws` only in `demo` is not sufficient due to Node’s module resolution (the server code requiring `ws` lives under `packages/nasc-server`).
 
 
 ## How It Works (end-to-end)
@@ -184,7 +187,7 @@ The key rule is simple and consistent:
 - `schemas/`
   - `app.schema.json` – JSON Schema `$defs` for `User`, `Todo`, `TodoList`
   - `app.mapping.json` – Example mapping metadata (used in normalized SQLite mode)
-- `*.html`        – Pages (user, todo, combined app) using `na-*` attributes
+- `app.html`      – Combined app page using `na-*` attributes
 - `styles.css`    – Shared styling for a slick, unified look
 - `status.js`     – Demo-only status badge (transport/status indicator)
 
