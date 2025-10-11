@@ -14,3 +14,4 @@ exclude:
   - ROADMAP.md
   - sse-vs-websockets.md
   - initial-sketch/
+  - nasc-review.md
