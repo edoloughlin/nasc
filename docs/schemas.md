@@ -1,25 +1,25 @@
-# Schemas in Nasc
+---
+layout: default
+title: Schemas & Validation
+nav_order: 6
+---
 
-This document explains how JSON Schemas are used in Nasc for developer ergonomics (DX), typed validation hints, and predictable wiring between HTML and handlers.
+# Schemas & Validation
 
-Nasc relies on a simple, server‑authoritative model: handlers return plain objects as state; Nasc diffs and streams DOM patches. Schemas are optional but highly recommended for a great DX.
+Nasc treats JSON Schema as a developer-experience feature: handlers remain in charge of logic, but schemas let the client catch binding drift, highlight mistakes, and power typed hints. This mirrors the “trust but verify” philosophy from the htmx docs.
 
-## What Schemas Are Used For
+## Why Ship Schemas?
 
-- Types and shape: Define each domain type (e.g., `User`, `Todo`, `TodoList`) and their properties.
-- Validation hints (dev): The client uses schemas pushed from the server to validate your HTML bindings. Unknown or mismatched bindings are highlighted with a small overlay and a “Reveal” button.
-- Typed binds: `na-type="Type"` and `na-bind="Type:prop"` leverage schemas so validation stays precise even with nested templates.
-
-Schemas are not runtime enforcement in core. They exist for DX (warnings/overlay) and for optional persistence adapters.
+- **Detect drift early.** When a handler drops a property, the client shows an overlay pointing to stale `na-bind` or `name` attributes.【F:packages/nasc-client/nasc.js†L224-L453】
+- **Document intent.** Typed bindings (`na-bind="Type:prop"`) and `na-type` hints become self-checking documentation during development.【F:README.md†L95-L101】【F:packages/nasc-client/nasc.js†L365-L453】
+- **Help persistence adapters.** Optional SQLite stores and custom adapters can use the same definitions to map rows back to plain objects.【F:README.md†L84-L92】
 
 ## Where Schemas Live
 
-- Demo location: `demo/schemas/app.schema.json`
-- Structure: a single file with a top-level `$defs` map where each key is a type name. Example:
+Schemas are ordinary JSON files. The demo keeps them in `demo/schemas/app.schema.json` with a top-level `$defs` object mapping type names to definitions. Provide either the `$defs` map or a function returning individual schemas when you initialize the server.【F:demo/README.md†L82-L176】【F:packages/nasc-server/index.js†L30-L85】
 
 ```json
 {
-  "$id": "/schemas/app.schema.json",
   "$defs": {
     "User": {
       "type": "object",
@@ -27,8 +27,7 @@ Schemas are not runtime enforcement in core. They exist for DX (warnings/overlay
         "id": { "type": "string" },
         "name": { "type": "string" },
         "email": { "type": "string", "format": "email" }
-      },
-      "required": ["id", "name", "email"]
+      }
     },
     "Todo": {
       "type": "object",
@@ -36,77 +35,42 @@ Schemas are not runtime enforcement in core. They exist for DX (warnings/overlay
         "id": { "type": "string" },
         "title": { "type": "string" },
         "completed": { "type": "boolean" }
-      },
-      "required": ["id", "title", "completed"]
-    },
-    "TodoList": {
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "items": { "type": "array", "items": { "$ref": "#/$defs/Todo" } }
-      },
-      "required": ["id", "items"]
+      }
     }
   }
 }
 ```
 
-## How Schemas Flow
+## Server Responsibilities
 
-1) Provide to the server
-- When starting Nasc, you pass the `$defs` provider to `attachNasc`:
+1. **Expose schemas.** Pass `schemaProvider` to `attachNasc` (object map or async function).【F:packages/nasc-server/index.js†L30-L197】
+2. **Push on mount.** For every `mount` event, the server streams a `schema` patch for the instance type and any `$ref`-based child types before sending `bindUpdate` patches.【F:packages/nasc-server/index.js†L30-L85】
+3. **Optional HTTP access.** If you pass `attachApp`, Nasc registers `/nasc/schema` endpoints so tooling can fetch schemas directly.【F:packages/nasc-server/index.js†L131-L181】
 
-```ts
-attachNasc({ app, server, handlers, schemaProvider: appSchema.$defs, ssr: { rootDir } });
-```
+## Client Responsibilities
 
-2) Server pushes schemas on mount
-- On every mount, the server pushes a schema patch:
-  - `{ action: "schema", type: "TodoList", schema: <…> }`
-  - It also pushes child type schemas if the parent references them via array `$ref` (e.g., `TodoList.items → Todo`).
+1. **Cache definitions.** Each `schema` patch is stored in `window.__NASC_SCHEMAS` and remembered per type.【F:packages/nasc-client/nasc.js†L31-L214】
+2. **Validate patches.** When a `bindUpdate` arrives, the client checks the schema before updating the DOM. Mismatches trigger overlay warnings but do not block rendering.【F:packages/nasc-client/nasc.js†L47-L100】【F:packages/nasc-client/nasc.js†L224-L453】
+3. **Sweep declared bindings.** After schemas arrive, the client scans every `[na-bind]` and `name="…"` within matching instances to flag unknown properties. Templates propagate type scopes so nested bindings validate correctly.【F:packages/nasc-client/nasc.js†L352-L453】
+4. **Visual feedback.** Errors land in a floating overlay with “Reveal” buttons that scroll and highlight the element. Press `Esc` to dismiss.【F:packages/nasc-client/nasc.js†L252-L333】
 
-3) Client caches and validates
-- The client keeps schemas in `window.__NASC_SCHEMAS` and validates your HTML bindings:
-  - Unknown `[na-bind]` and inputs with `name="…"` are flagged.
-  - Inside list templates, the client uses `na-type` (or array `$ref`) to validate against the child’s schema.
-  - Typed shorthand `na-bind="Type:prop"` pins a binding to a specific type.
+## Typed Bindings Cheat Sheet
 
-4) Dev overlay
-- The client shows a small overlay with issues and a “Reveal” button that scrolls to and highlights the offending element.
-- This is intended for development; production apps can alter or disable the overlay if desired.
-
-## Typed Bindings Recap
-
-- `na-type="Todo"` on a list template clarifies the schema for bindings inside:
-
-```html
-<ul na-bind="items">
-  <template na-each="items" na-key="id" na-type="Todo">
-    <li>
-      <span na-bind="title"></span>
-    </li>
-  </template>
-  </ul>
-```
-
-- `na-bind="User:name"` explicitly targets the `User` schema for that binding.
-- Patch routing still uses the nearest `na-instance`; typing affects validation/ergonomics.
+- `na-type="Todo"` on list templates clarifies the type for cloned nodes.【F:README.md†L95-L101】【F:packages/nasc-client/nasc.js†L130-L171】
+- `na-bind="Todo:title"` explicitly ties a binding to the `Todo` schema even outside templates.【F:packages/nasc-client/nasc.js†L365-L400】
+- Inputs with `name="prop"` are validated too; use `na-type` when the input belongs to a child item rather than the parent instance.【F:packages/nasc-client/nasc.js†L401-L453】
 
 ## Best Practices
 
-- Keep `$defs` in sync with handlers. The server pushes schemas on every page load so drift is obvious via the overlay.
-- Prefer `na-type` on list templates; it makes intent clear and avoids inference pitfalls.
-- Use stable keys for lists (`na-key`), and bind only properties you control server‑side.
-- Consider adding schema versioning (`$id` with semver) and running a schema compatibility check in CI.
+- Keep `$defs` in source control alongside handlers so reviews capture schema changes.【F:demo/README.md†L82-L176】
+- Version schemas by updating `$id` strings or filenames so other services can detect incompatible changes.
+- Derive schemas from your domain models (e.g., generate from TypeScript types) to avoid duplication.
+- Disable or customize the overlay for production if desired; it is purely a development aid.
 
-## Mapping (Out of Scope for Core)
+## Frequently Asked Questions
 
-- A separate `app.mapping.json` can be used by optional persistence adapters to create normalized tables (see the demo’s `SqliteMappedStore`).
-- Nasc core does not implement a full mapping/ORM. For production apps, prefer ORMs like Prisma/Drizzle and implement a tiny `Store` bridge.
+**Do I need schemas?** No. Without them the client skips validation and simply applies patches. However, you lose drift detection and typed hints.【F:packages/nasc-client/nasc.js†L47-L214】
 
-## FAQ
+**Will Nasc block invalid data?** No. Schemas are advisory. Handlers remain responsible for enforcing invariants, though you can reject bad events yourself before returning state.【F:packages/nasc-server/engine.js†L35-L58】
 
-- Do I need schemas? No, but you get much better DX (typed overlays, early drift detection).
-- Are schemas enforced at runtime? Not by core. They’re advisory for the client and optional adapters.
-- Can I fetch schemas via HTTP? The demo uses push-on-mount. An explicit GET can be mounted if needed, but is not required.
-
+**Can I fetch schemas via HTTP?** Yes. Mounting the Express integration exposes `/nasc/schema/:type`. Use it to power editor integrations or CLI tooling.【F:packages/nasc-server/index.js†L131-L181】
