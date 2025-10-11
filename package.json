@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node demo-server.js",
-    "test": "node --test packages/**/__tests__/*.test.js"
+    "test": "node --test packages/*/tests/*.test.js"
   },
   "dependencies": {
     "express": "^4.21.2",
