@@ -1,0 +1,14 @@
+{
+  "name": "na-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node demo-server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.3",
+    "better-sqlite3": "^9.4.0"
+  }
+}

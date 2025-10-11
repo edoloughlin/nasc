@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nasc Demo • App</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/nasc.js"></script>
+    <script src="/status.js" defer></script>
+  </head>
+  <body class="nasc-demo" na-connect>
+    <div class="container">
+      <div class="page-header">
+        <h1>Nasc Demo</h1>
+        <span class="page-subtitle">User + Todos with SSR and live patches</span>
+      </div>
+
+      <div class="grid">
+        <!-- User card -->
+        <div class="card" na-instance="User:currentUser">
+          <div class="scope">Scope <code>User:currentUser</code></div>
+          <h2>Hello, <span na-bind="name">Guest</span> 👋</h2>
+          <p class="muted">Email on file: <strong na-bind="email"></strong></p>
+
+          <form class="form" na-submit="save_profile">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input id="name" class="input" name="name" placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input id="email" class="input" name="email" type="email" placeholder="you@example.com" />
+            </div>
+            <button class="btn" type="submit">Save profile</button>
+          </form>
+        </div>
+
+        <!-- Todo card -->
+        <div class="card" na-instance="TodoList:my-list">
+          <div class="scope">Scope <code>TodoList:my-list</code></div>
+
+          <form class="todo-header" na-submit="add_todo">
+            <input class="input" name="title" placeholder="What needs to be done?" />
+            <button class="btn" type="submit">Add</button>
+          </form>
+
+          <h2>My Todos</h2>
+          <ul class="todo-list" na-bind="items">
+            <template na-each="items" na-key="id" na-type="Todo">
+              <li class="todo-item">
+                <label class="todo-item" style="flex:1">
+                  <input type="checkbox" na-click="toggle_todo" data-id="{{id}}" na-bind="completed" />
+                  <span class="todo-title" na-bind="title"></span>
+                </label>
+                <div>
+                  <button class="btn" style="padding:6px 10px" na-click="move_up" data-id="{{id}}">↑</button>
+                  <button class="btn" style="padding:6px 10px" na-click="move_down" data-id="{{id}}">↓</button>
+                  <button class="btn" style="padding:6px 10px; background: linear-gradient(180deg, var(--danger), #e85a5a)" na-click="remove_todo" data-id="{{id}}">✕</button>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+      <!-- Transport toggle (demo-only) -->
+      <div class="note" style="margin-top:16px">Transport:
+        <select id="transportSel" class="input" style="width:auto; padding:6px 10px; margin-left:8px">
+          <option value="sse">SSE (default)</option>
+          <option value="ws">WebSocket</option>
+        </select>
+      </div>
+    </div>
+    <script>
+      // Demo-only transport toggle: updates ?transport= and reloads
+      (function(){
+        const sel = document.getElementById('transportSel');
+        if (!sel) return;
+        const sp = new URLSearchParams(location.search);
+        const cur = (sp.get('transport')||'sse').toLowerCase();
+        sel.value = (cur === 'ws') ? 'ws' : 'sse';
+        sel.addEventListener('change', () => {
+          const nv = sel.value;
+          const usp = new URLSearchParams(location.search);
+          if (nv === 'sse') usp.delete('transport'); else usp.set('transport', nv);
+          const url = location.pathname + (usp.toString() ? '?' + usp.toString() : '');
+          location.assign(url);
+        });
+      })();
+    </script>
+  </body>
+  </html>

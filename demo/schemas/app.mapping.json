@@ -1,0 +1,21 @@
+{
+  "$id": "/schemas/app.mapping.json",
+  "User": {
+    "x-nc:store": {
+      "entity": "users",
+      "pk": "id"
+    }
+  },
+  "Todo": {
+    "x-nc:store": {
+      "entity": "todos",
+      "pk": "id"
+    }
+  },
+  "TodoList": {
+    "x-nc:store": {
+      "entity": "todo_lists",
+      "pk": "id"
+    }
+  }
+}
