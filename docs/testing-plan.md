@@ -8,6 +8,7 @@ This plan establishes the initial suite of automated tests for the Nasc server p
 2. Validate request/response utilities (schema helpers and processor) to ensure protocol compatibility.
 3. Provide targeted coverage for server integration helpers with lightweight mocks.
 4. Document additional scenarios for future expansion (e.g., persistence adapters, SSR) to guide ongoing work.
+5. Add DOM-level regression tests for the browser client so we can validate binding behaviour against HTML fixtures.
 
 ## Test Suites
 
@@ -25,6 +26,11 @@ This plan establishes the initial suite of automated tests for the Nasc server p
 ### 3. Schema Utilities (`schema.test.js`)
 - `normalizeSchemaProvider` supports functional and map providers and gracefully handles missing schemas.
 - `createSchemaHandler` responds with the expected HTTP status codes (200, 400, 404, 500) and payload shapes across edge cases.
+
+### 4. Client Bindings (`client-bindings.test.js`)
+- Simulate SSE-driven patch streams against HTML fragments to ensure mount events post the correct payload and bind updates hydrate text and form controls.
+- Validate keyed template rendering for `na-each` lists so reorder/regeneration logic stays stable.
+- Confirm typed `na-bind` syntax stays in sync with untyped bindings when diff patches arrive.
 
 ## Out of Scope (Future Work)
 - End-to-end SSE/WebSocket transport tests (would require integration environment).
