@@ -10,7 +10,7 @@
 
 **2) Overloading JSON Schema**
 
-* **Annoyance:** JSON Schema is great for validation, not perfect for relational mapping, ACLs, or lifecycle rules; `x-ax:*` annotations can become a grab bag.
+* **Annoyance:** JSON Schema is great for validation, not perfect for relational mapping, ACLs, or lifecycle rules; `x-na:*` annotations can become a grab bag.
 * **Fix:** Split concerns:
   * **DONE:** Keep **JSON Schema** for validation + types. (`app.schema.json`)
   * **DONE:** Add a **Store Mapping DSL** (YAML/JSON) for persistence (`entity`, `pk`, relations, write policies). This is now in `app.mapping.json`.
@@ -150,7 +150,7 @@
 * **Annoyance:** Teams won’t throw away their component systems.
 * **Fix:**
 
-  * Provide **thin bindings**: `<AxScope instance="User:currentUser">` for React, etc., that map `na-bind` to framework idioms.
+  * Provide **thin bindings**: `<NaScope instance="User:currentUser">` for React, etc., that map `na-bind` to framework idioms.
   * Or expose a **store API** so frameworks subscribe to typed instances without DOM attributes.
 
 **20) Tooling fatigue**
