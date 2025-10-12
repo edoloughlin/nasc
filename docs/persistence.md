@@ -58,15 +58,15 @@ Shape:
 ```json
 {
   "$id": "/schemas/app.mapping.json",
-  "User":   { "x-nc:store": { "entity": "users",      "pk": "id" } },
-  "Todo":   { "x-nc:store": { "entity": "todos",      "pk": "id" } },
-  "TodoList": { "x-nc:store": { "entity": "todo_lists", "pk": "id" } }
+  "User":   { "x-na:store": { "entity": "users",      "pk": "id" } },
+  "Todo":   { "x-na:store": { "entity": "todos",      "pk": "id" } },
+  "TodoList": { "x-na:store": { "entity": "todo_lists", "pk": "id" } }
 }
 ```
 
 Fields:
-- `x-nc:store.entity`: Table name for the type. If omitted, defaults to the pluralized form `<type.toLowerCase()>s` (e.g., `todolist` → `todolists`).
-- `x-nc:store.pk`: Name of the primary key property in the type’s schema. Defaults to `id`.
+- `x-na:store.entity`: Table name for the type. If omitted, defaults to the pluralized form `<type.toLowerCase()>s` (e.g., `todolist` → `todolists`).
+- `x-na:store.pk`: Name of the primary key property in the type’s schema. Defaults to `id`.
 
 How `SqliteMappedStore` uses it:
 - Scalars → main table: For each type, `schema.$defs[Type].properties` is scanned. Scalar properties (`string`, `number`, `integer`, `boolean`) become columns on the main table (`entity`). Booleans are stored as INTEGER 0/1.

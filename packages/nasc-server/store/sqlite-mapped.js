@@ -43,7 +43,7 @@ class SqliteMappedStore {
 
   typeInfo(type) {
     const def = (this.schema && this.schema.$defs && this.schema.$defs[type]) || null;
-    const m = (this.mapping && this.mapping[type] && this.mapping[type]['x-nc:store']) || null;
+    const m = (this.mapping && this.mapping[type] && this.mapping[type]['x-na:store']) || null;
     if (!def || !m) throw new Error(`Missing schema/mapping for type '${type}'`);
     const entity = sanitizeIdent(m.entity || `${type.toLowerCase()}s`);
     const pk = sanitizeIdent(m.pk || 'id');
@@ -209,4 +209,3 @@ function fromDbValue(val, typ) {
 }
 
 module.exports = { SqliteMappedStore };
-
