@@ -70,9 +70,92 @@ The server routes that payload to `handlers['User'].save_profile` and diffs the 
 ## Scaffold Your Own Feature
 
 1. **Create markup.** Add a new `na-instance="Feature:some-id"` container with the binds and events you need. Use the [Template Attributes Reference](./attributes) as a checklist.
-2. **Add a handler.** Export an object with a `mount()` method plus one function per event name (e.g., `save`, `archive`). Return the next state from each event handler.
+2. **Add a handler.** Export an object with a `mount()` method plus one function per event name (e.g., `save`, `archive`). Return the next state from each event handler. Following the convention in the demo, you would create a `handlers/feaure.ts` file and export a `Feature` object.
 3. **Register the handler.** Pass your handler into `attachNasc({ handlers })` or `createProcessor()` so the server knows how to process events.
-4. **(Optional) Define schema.** Provide JSON Schema via `schemaProvider` to unlock validation overlays and typed hints. See [Schemas & Validation](./schemas).
+4. **(Optional) Define schema.** Provide JSON Schema via `schemaProvider` to unlock validation overlays and typed hints. Following the demo convention, you would add a `Feature` property to the `$defs` object in `schemas/app.schema.json`. See [Schemas & Validation](./schemas).
+
+Demo convention: instance → schema → handler
+
+- `na-instance="Feature:some-id"`: The left side (`Feature`) is the feature type; the right side (`some-id`) is the instance key.
+- `schemas/app.schema.json`: The demo defines reusable types under `"$defs"` (e.g., `"$defs".Feature`). The left side of `na-instance` (`Feature`) maps to that type definition; the right side (`some-id`) is an instance identifier used at runtime (seeded by `mount`, a store, or fixtures), not enumerated in the schema.
+- `schemas/app.mapping.json` (optional): Maps feature types to backing stores/entities (e.g., table name and primary key). This influences where `some-id` is looked up, not the JSON Schema shape.
+- `handlers/feature.ts`: By convention, the feature type name maps to a TypeScript file of the same name that exports a `Feature` interface for state shape and a default handler implementation for events.
+
+Example HTML
+
+```html
+<section class="card" na-instance="Feature:some-id">
+  <h3><span na-bind="title">Untitled</span></h3>
+  <button class="btn" na-click="archive">Archive</button>
+  <form na-submit="rename">
+    <input name="title" placeholder="New title" />
+    <button type="submit">Save</button>
+  </form>
+  <p>Status: <strong na-bind="status"></strong></p>
+  <template na-each="items" na-key="id">
+    <li><span na-bind="label"></span></li>
+  </template>
+</section>
+```
+
+Example schema type (schemas/app.schema.json)
+
+```json
+{
+  "$id": "/schemas/app.schema.json",
+  "$defs": {
+    "Feature": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "archived"] },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" }
+            },
+            "required": ["id", "label"]
+          }
+        }
+      },
+      "required": ["title", "status"]
+    }
+  }
+}
+```
+
+Example handler (handlers/feature.ts)
+
+```ts
+// State shape used by this feature instance
+export interface Feature {
+  title: string;
+  status: 'active' | 'archived';
+  items: { id: string; label: string }[];
+}
+
+// Default export implements lifecycle + event handlers
+const Feature = {
+  mount(id: string): Feature {
+    return { title: `Feature ${id}`, status: 'active', items: [] };
+  },
+
+  rename(state: Feature, input: { title: string }): Feature {
+    return { ...state, title: input.title };
+  },
+
+  archive(state: Feature): Feature {
+    return { ...state, status: 'archived' };
+  }
+};
+
+export default Feature;
+```
+
+With this convention, the `Feature` part of `na-instance` links to `handlers/feature.ts` (for behavior) and to `"$defs".Feature` in `schemas/app.schema.json` (for shape/validation). The `some-id` portion is the instance identifier used by your handler’s `mount`, in-memory state, or backing store (optionally guided by `schemas/app.mapping.json`). The runtime does not require TypeScript, but exporting a `Feature` interface helps keep handlers and templates in sync.
 
 Restart the server or hot-reload as needed, then exercise the UI. Within seconds you can iterate on new features while the framework handles transports, state diffs, and DOM patching for you.
 

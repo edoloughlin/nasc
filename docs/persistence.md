@@ -44,6 +44,53 @@ Both SQLite adapters lazy-load `better-sqlite3` and throw a helpful error if the
 - `SqliteStore` creates a table per type (by default `<type>s`) with `id` + JSON payload. Use it when you want persistence without relational modeling.
 - `SqliteMappedStore` reads mapping metadata (like `app.mapping.json`) and schema definitions to create normalized tables for scalar properties and one-to-many relationships. It replaces child rows on each persist to keep data consistent.
 
+## app.mapping.json
+
+Purpose: describe how a feature type maps to storage. The demo ships `schemas/app.mapping.json` to drive the normalized SQLite adapter (`SqliteMappedStore`). It does not change runtime behavior; it only informs how to create/read/write tables.
+
+Linkage:
+- Type key: Each top-level key in `app.mapping.json` is a feature type name (e.g., `User`, `TodoList`). It should match both:
+  - The schema type under `schemas/app.schema.json` → `$defs.<Type>`
+  - The handler name you register (e.g., `handlers['TodoList']`)
+
+Shape:
+
+```json
+{
+  "$id": "/schemas/app.mapping.json",
+  "User":   { "x-nc:store": { "entity": "users",      "pk": "id" } },
+  "Todo":   { "x-nc:store": { "entity": "todos",      "pk": "id" } },
+  "TodoList": { "x-nc:store": { "entity": "todo_lists", "pk": "id" } }
+}
+```
+
+Fields:
+- `x-nc:store.entity`: Table name for the type. If omitted, defaults to the pluralized form `<type.toLowerCase()>s` (e.g., `todolist` → `todolists`).
+- `x-nc:store.pk`: Name of the primary key property in the type’s schema. Defaults to `id`.
+
+How `SqliteMappedStore` uses it:
+- Scalars → main table: For each type, `schema.$defs[Type].properties` is scanned. Scalar properties (`string`, `number`, `integer`, `boolean`) become columns on the main table (`entity`). Booleans are stored as INTEGER 0/1.
+- One‑to‑many arrays → child table: Array‑of‑object properties whose items are `$ref: '#/$defs/<ChildType>'` are stored in the child type’s `entity` table. On each persist, existing child rows for the parent are deleted and re‑inserted to match the current array.
+- Foreign key naming: The child table gets a foreign key column named `<parentEntitySingular>_<parentPk>`. The singular form is derived by stripping a trailing `s` from the parent entity (e.g., `todo_lists` → `todo_list_id`).
+- Defaults: If a type is missing from `app.mapping.json`, the adapter throws an error for that type. Provide `entity`/`pk` for every type you want to persist via the mapped store.
+
+Initialization example:
+
+```ts
+import appSchema from './schemas/app.schema.json';
+import appMapping from './schemas/app.mapping.json';
+import { SqliteMappedStore } from '../packages/nasc-server/store/sqlite-mapped';
+
+const store = new SqliteMappedStore(process.env.DB_PATH!, {
+  mapping: appMapping,
+  schema: appSchema
+});
+```
+
+Runtime data flow:
+- `na-instance="Type:id"` → the `Type` selects the mapping and schema type; the `id` value is the row key in the main table (`pk`).
+- Your handler returns the full state; the processor computes diffs and calls `store.persist(Type, id, diff, full)`; the mapped store applies an upsert to the main table and fully replaces child rows for array relations.
+
 ## Testing Tips
 
 - Inject a fake store (e.g., `new Map()`) into `attachNasc({ store })` to capture diffs during unit tests.
