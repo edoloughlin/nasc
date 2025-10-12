@@ -69,10 +69,10 @@ The server routes that payload to `handlers['User'].save_profile` and diffs the 
 
 ## Scaffold Your Own Feature
 
-1. **Create markup.** Add a new `na-instance="Feature:some-id"` container with the binds and events you need. Use the [Template Attributes Reference](./attributes) as a checklist.
+1. **Create markup.** Add a new `na-instance="Feature:some-id"` container with the binds and events you need. Use the [Template Attributes Reference]({{ '/attributes' | relative_url }}) as a checklist.
 2. **Add a handler.** Export an object with a `mount()` method plus one function per event name (e.g., `save`, `archive`). Return the next state from each event handler. Following the convention in the demo, you would create a `handlers/feaure.ts` file and export a `Feature` object.
 3. **Register the handler.** Pass your handler into `attachNasc({ handlers })` or `createProcessor()` so the server knows how to process events.
-4. **(Optional) Define schema.** Provide JSON Schema via `schemaProvider` to unlock validation overlays and typed hints. Following the demo convention, you would add a `Feature` property to the `$defs` object in `schemas/app.schema.json`. See [Schemas & Validation](./schemas).
+4. **(Optional) Define schema.** Provide JSON Schema via `schemaProvider` to unlock validation overlays and typed hints. Following the demo convention, you would add a `Feature` property to the `$defs` object in `schemas/app.schema.json`. See [Schemas & Validation]({{ '/schemas' | relative_url }}).
 
 Demo convention: instance → schema → handler
 
