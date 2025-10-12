@@ -4,12 +4,14 @@ title: 'Offline support: replay queue and long-poll'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:07'
 labels:
   - annoyances
   - frontend
   - network
   - offline
 dependencies: []
+priority: medium
 ---
 
 ## Description
