@@ -2,6 +2,8 @@
 
 Nasc means 'bind' in the Irish language.
 
+You can read the online documentation at https://edoloughlin.github.io/nasc/
+
 Nasc is a proof-of-concept framework for building reactive user interfaces with plain HTML and a backend that manages state. By default it streams server→client patches over Server‑Sent Events (SSE) and sends client→server events via HTTP; WebSockets are also supported for features that need bidirectional, high-frequency updates.
 
 *Note:* this is currently a PoC. There is currently no packaged version of this project.
