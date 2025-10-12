@@ -14,7 +14,7 @@ Goal: Update profile details and surface schema errors.
 
 1. **HTML** – Wrap the form in `na-instance="User:currentUser"`, bind fields with `na-bind`, and keep input `name` attributes aligned.
 2. **Handler** – Implement `mount()` to load the user and `save_profile(payload)` to return the updated object.
-3. **Validation** – Define the `User` schema with required properties so the overlay flags missing binds immediately.【F:demo/README.md†L48-L130】【F:demo/README.md†L82-L186】
+3. **Validation** – Define the `User` schema with required properties so the overlay flags missing binds immediately.
 
 ```html
 <div na-instance="User:currentUser">
@@ -34,7 +34,7 @@ Goal: Render an array of todos, toggle completion, and maintain order.
 
 1. **HTML** – Bind the list container to `na-bind="items"` and place a `<template na-each="items" na-key="id" na-type="Todo">` inside.
 2. **Handlers** – Implement `add_todo`, `toggle_todo`, `move_up`, `move_down`, and `remove_todo` methods that return the entire list state.
-3. **Events** – Add `na-click` to buttons and include `data-id` attributes so payloads route to the correct todo.【F:demo/README.md†L131-L170】
+3. **Events** – Add `na-click` to buttons and include `data-id` attributes so payloads route to the correct todo.
 
 ```html
 <ul class="todo-list" na-bind="items">
@@ -55,15 +55,15 @@ Goal: Render an array of todos, toggle completion, and maintain order.
 Goal: Let developers toggle transports without editing code.
 
 1. **HTML** – Add a simple toolbar with buttons linking to `?transport=sse` or `?transport=ws`.
-2. **Client** – The runtime reads the query parameter and switches transports accordingly.【F:README.md†L56-L66】【F:packages/nasc-client/nasc.js†L484-L588】
-3. **Server** – Ensure the `ws` dependency is installed if you want the WebSocket option to succeed.【F:packages/nasc-server/index.js†L268-L278】【F:demo/README.md†L32-L45】
+2. **Client** – The runtime reads the query parameter and switches transports accordingly.
+3. **Server** – Ensure the `ws` dependency is installed if you want the WebSocket option to succeed.
 
 ## SSR Bootstrapped Page
 
 Goal: Serve meaningful HTML before the live connection starts.
 
 1. **Server** – Pass `ssr: { rootDir }` to `attachNasc`.
-2. **HTML** – Author pages with `na-bind` placeholders; SSR fills them with values from `mount()` so the first paint looks complete.【F:packages/nasc-server/index.js†L280-L317】【F:demo/README.md†L74-L86】
+2. **HTML** – Author pages with `na-bind` placeholders; SSR fills them with values from `mount()` so the first paint looks complete.
 
 ## Persistence Swap
 
@@ -71,6 +71,6 @@ Goal: Switch from in-memory state to SQLite.
 
 1. Install `better-sqlite3` at the workspace root.
 2. Require `SqliteStore` or `SqliteMappedStore` from `packages/nasc-server` and pass an instance via `attachNasc({ store })`.
-3. Provide mapping metadata (`app.mapping.json`) if you use the normalized adapter.【F:README.md†L84-L92】【F:packages/nasc-server/store/sqlite.js†L1-L53】【F:packages/nasc-server/store/sqlite-mapped.js†L1-L192】
+3. Provide mapping metadata (`app.mapping.json`) if you use the normalized adapter.
 
 These recipes are starting points—mix and match them to build richer experiences while keeping your HTML declarative and server logic focused.
