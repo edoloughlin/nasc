@@ -4,6 +4,7 @@ title: Formatting and i18n utilities
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
+updated_date: '2025-10-12 11:03'
 labels:
   - annoyances
   - frontend
@@ -15,7 +16,7 @@ dependencies: []
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Add  for dates/currency and a basic i18n catalog (ANNOYANCES.md #14; ROADMAP).
+Add na-format for dates/currency and a basic i18n catalog (ANNOYANCES.md #14; ROADMAP).
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
