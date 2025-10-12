@@ -4,12 +4,14 @@ title: 'Multi‑process scaling: sticky sessions or pub/sub'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:07'
 labels:
   - roadmap
   - ops
   - scaling
   - server
 dependencies: []
+priority: low
 ---
 
 ## Description
