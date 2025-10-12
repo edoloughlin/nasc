@@ -4,12 +4,14 @@ title: 'Contract tests: SSE vs WS equivalence'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:07'
 labels:
   - roadmap
   - testing
   - transport
   - ci
 dependencies: []
+priority: medium
 ---
 
 ## Description
