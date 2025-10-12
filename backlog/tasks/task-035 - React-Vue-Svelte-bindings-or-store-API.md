@@ -4,12 +4,13 @@ title: React/Vue/Svelte bindings or store API
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
-updated_date: '2025-10-12 11:08'
+updated_date: '2025-10-12 11:09'
 labels:
   - roadmap
   - ecosystem
   - frontend
   - duplicate
+  - 'epic:ecosystem'
 dependencies:
   - task-020
 priority: medium
