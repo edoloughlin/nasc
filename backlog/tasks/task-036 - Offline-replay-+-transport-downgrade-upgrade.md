@@ -4,11 +4,13 @@ title: Offline replay + transport downgrade/upgrade
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:09'
 labels:
   - roadmap
   - offline
   - transport
   - frontend
+  - 'epic:transports'
 dependencies: []
 ---
 
