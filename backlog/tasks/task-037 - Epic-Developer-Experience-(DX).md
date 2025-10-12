@@ -4,10 +4,11 @@ title: 'Epic: Developer Experience (DX)'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:05'
-updated_date: '2025-10-12 11:08'
+updated_date: '2025-10-12 11:09'
 labels:
   - epic
   - dx
+  - 'epic:dx'
 dependencies:
   - task-001
   - task-003
