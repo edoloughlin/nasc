@@ -20,18 +20,18 @@ Nasc is a "live HTML" framework that keeps your markup simple while letting the 
 
 | Section | What you will find |
 | --- | --- |
-| [Quick Start](./quick-start) | Spin up the demo, wire a page to handlers, and deploy.
-| [Core Concepts](./core-concepts) | Learn how instances, bindings, events, and diffs interact.
-| [Template Attributes Reference](./attributes) | Detailed behavior for every `na-*` attribute.
-| [Event & Transport Model](./events-and-transports) | Understand how SSE/WS streams, payloads, and fallbacks work.
-| [Schemas & Validation](./schemas) | How JSON Schema powers runtime validation and tooling.
-| [Server Integration](./server-integration) | Use `attachNasc`, SSR middleware, and custom stores.
-| [Persistence & Stores](./persistence) | Implement the store contract or plug in SQLite adapters.
-| [Debugging & Tooling](./debugging) | Tips for tracing patches, schema overlays, and manifests.
-| [Examples & Recipes](./recipes) | Patterns distilled from the bundled demo app.
-| [FAQ](./faq) | Answers to the most common architectural questions.
+| [Quick Start]({{ '/quick-start' | relative_url }}) | Spin up the demo, wire a page to handlers, and deploy.
+| [Core Concepts]({{ '/core-concepts' | relative_url }}) | Learn how instances, bindings, events, and diffs interact.
+| [Template Attributes Reference]({{ '/attributes' | relative_url }}) | Detailed behavior for every `na-*` attribute.
+| [Event & Transport Model]({{ '/events-and-transports' | relative_url }}) | Understand how SSE/WS streams, payloads, and fallbacks work.
+| [Schemas & Validation]({{ '/schemas' | relative_url }}) | How JSON Schema powers runtime validation and tooling.
+| [Server Integration]({{ '/server-integration' | relative_url }}) | Use `attachNasc`, SSR middleware, and custom stores.
+| [Persistence & Stores]({{ '/persistence' | relative_url }}) | Implement the store contract or plug in SQLite adapters.
+| [Debugging & Tooling]({{ '/debugging' | relative_url }}) | Tips for tracing patches, schema overlays, and manifests.
+| [Examples & Recipes]({{ '/recipes' | relative_url }}) | Patterns distilled from the bundled demo app.
+| [FAQ]({{ '/faq' | relative_url }}) | Answers to the most common architectural questions.
 
-> **Tip:** If you are new to "hypermedia driven UI", spend five minutes with [Quick Start](./quick-start) and then skim [Core Concepts](./core-concepts). The remaining sections dive deeper into specific tasks inspired by the htmx documentation flow.
+> **Tip:** If you are new to "hypermedia driven UI", spend five minutes with [Quick Start]({{ '/quick-start' | relative_url }}) and then skim [Core Concepts]({{ '/core-concepts' | relative_url }}). The remaining sections dive deeper into specific tasks inspired by the htmx documentation flow.
 
 ## Project Structure Recap
 
@@ -49,8 +49,8 @@ Use pnpm from the repository root to install dependencies and run the demo app w
 
 ## Next Steps
 
-1. Head to [Quick Start](./quick-start) to run the demo and scaffold your first page.
-2. Read [Core Concepts](./core-concepts) to understand how mounts, events, and patches fit together.
-3. Bookmark [Template Attributes Reference](./attributes) for day-to-day development.
+1. Head to [Quick Start]({{ '/quick-start' | relative_url }}) to run the demo and scaffold your first page.
+2. Read [Core Concepts]({{ '/core-concepts' | relative_url }}) to understand how mounts, events, and patches fit together.
+3. Bookmark [Template Attributes Reference]({{ '/attributes' | relative_url }}) for day-to-day development.
 
 Happy building!

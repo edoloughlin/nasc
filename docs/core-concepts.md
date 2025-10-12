@@ -63,4 +63,4 @@ Validation runs after mount and whenever new schemas arrive, mirroring the “ba
 
 Include `<body na-connect>` and the client will automatically connect once the DOM is ready, issue `mount` events for each instance, and begin streaming updates—no manual bootstrap required. If the attribute is absent you can call `connect()` yourself (e.g., for partial hydration or testing).
 
-Because everything lives in HTML, the pages remain legible even without JavaScript; the SSR middleware can prefill bindings so users see real content before the live connection upgrades it. Learn more in [Server Integration](./server-integration).
+Because everything lives in HTML, the pages remain legible even without JavaScript; the SSR middleware can prefill bindings so users see real content before the live connection upgrades it. Learn more in [Server Integration]({{ '/server-integration' | relative_url }}).
