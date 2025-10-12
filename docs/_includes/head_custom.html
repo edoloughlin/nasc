@@ -1,0 +1,38 @@
+<script>
+(function () {
+  var KEY = 'jtd-theme'; // just-the-docs uses this key
+  var root = document.documentElement;
+
+  function apply(theme) {
+    if (theme) root.setAttribute('data-theme', theme);
+  }
+
+  var stored = localStorage.getItem(KEY);
+  if (stored === 'light' || stored === 'dark') {
+    apply(stored);                         // honour prior user choice
+  } else {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    apply(mq.matches ? 'dark' : 'light');  // follow system on first visit
+    // keep following system unless user explicitly picks a theme
+    mq.addEventListener('change', function (e) {
+      if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+    });
+  }
+
+  // If the theme switcher is enabled, keep localStorage in sync
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t) return;
+    // handles both the switcher button and its <input>
+    if (t.closest && t.closest('[data-theme-switcher]')) {
+      // read current attribute after just-the-docs toggles it
+      requestAnimationFrame(function () {
+        var current = root.getAttribute('data-theme');
+        if (current === 'light' || current === 'dark') {
+          localStorage.setItem(KEY, current);
+        }
+      });
+    }
+  });
+})();
+</script>
