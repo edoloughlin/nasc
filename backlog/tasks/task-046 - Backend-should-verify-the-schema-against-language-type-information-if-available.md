@@ -6,7 +6,7 @@ title: >-
 status: In Progress
 assignee: []
 created_date: '2025-10-12 14:49'
-updated_date: '2025-10-12 15:19'
+updated_date: '2025-10-12 15:21'
 labels:
   - 'epic:dx'
 dependencies: []
@@ -17,7 +17,7 @@ dependencies: []
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Where the handler implementation provides type information, the backend should verify it against the schema information.
 
-For Typescript, there should be a developer cli to validate the schema against the handler types. It should determine the mappings and examine the Typescript type and/or interface definitions and ensure they match the schema json.
+For Typescript, there should be a cli tool that finds the interfaces or types provided by the handler and veriy them against the json schema. The developer should not need to provide any extra code or information to support this. It should work by examining the code.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
