@@ -53,9 +53,17 @@
                   <span class="todo-title" na-bind="title"></span>
                 </label>
                 <div>
-                  <button class="btn" style="padding:6px 10px" na-click="move_up" data-id="{{id}}">↑</button>
-                  <button class="btn" style="padding:6px 10px" na-click="move_down" data-id="{{id}}">↓</button>
-                  <button class="btn" style="padding:6px 10px; background: linear-gradient(180deg, var(--danger), #e85a5a)" na-click="remove_todo" data-id="{{id}}">✕</button>
+                  <button class="icon-btn" na-click="move_up" data-id="{{id}}" aria-label="Move up">
+                    <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <path d="M8 3 L2 11 H14 Z" />
+                    </svg>
+                  </button>
+                  <button class="icon-btn" na-click="move_down" data-id="{{id}}" aria-label="Move down">
+                    <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <path d="M2 5 L14 5 L8 13 Z" />
+                    </svg>
+                  </button>
+                  <button class="icon-btn" na-click="remove_todo" data-id="{{id}}">✕</button>
                 </div>
               </li>
             </template>
@@ -68,6 +76,9 @@
           <option value="sse">SSE (default)</option>
           <option value="ws">WebSocket</option>
         </select>
+      </div>
+      <div class="note" style="margin-top:8px">
+        Manifest: <a href="/nasc/manifest" target="_blank" rel="noopener noreferrer">/nasc/manifest</a>
       </div>
     </div>
     <script>
