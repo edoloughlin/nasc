@@ -4,12 +4,13 @@ title: Scope inspector and explicit binds
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
-updated_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:09'
 labels:
   - annoyances
   - frontend
   - dx
   - tooling
+  - 'epic:dx'
 dependencies: []
 priority: medium
 ---
