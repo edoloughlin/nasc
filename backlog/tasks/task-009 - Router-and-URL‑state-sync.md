@@ -24,4 +24,6 @@ Provide router that binds route params to mount() and syncs selected state to UR
 - [ ] #1 Route param → instance plumbing
 - [ ] #2 SSR compatibility and tests
 - [ ] #3 Docs and examples
+
+- [ ] #4 na-sync mappings for query/hash
 <!-- AC:END -->
