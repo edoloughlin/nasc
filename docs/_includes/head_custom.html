@@ -6,19 +6,23 @@
   var root=document.documentElement;
 
   function setTheme(t){
+    console.log('setTheme',t);
     if(t==='light'||t==='dark'){ root.setAttribute('data-theme',t); }
   }
 
   var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+  console.log('mq',mq);
   function autoTheme(){ return (mq && mq.matches) ? 'dark' : 'light'; }
 
   var pref=localStorage.getItem(KEY);
+  console.log('pref from localStorage', pref, 'used key', KEY);
   if(pref!=='light'&&pref!=='dark'){ pref='auto'; }
 
   setTheme(pref==='auto' ? autoTheme() : pref);
 
   if(mq && mq.addEventListener){
     mq.addEventListener('change', function(e){
+      console.log('media query change handler', e);
       if((localStorage.getItem(KEY)||'auto')==='auto'){
         setTheme(e.matches ? 'dark' : 'light');
       }
@@ -29,8 +33,10 @@
     var el=ev.target;
     while(el){
       if(el.hasAttribute && el.hasAttribute('data-theme-switcher')){
+        console.log('document click handler matched', el);
         setTimeout(function(){
           var cur=root.getAttribute('data-theme');
+          console.log('document click handler cur theme',cur);
           if(cur==='light'||cur==='dark'){ localStorage.setItem(KEY, cur); }
         },0);
         break;
