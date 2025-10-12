@@ -4,12 +4,13 @@ title: Prisma/Drizzle adapters with visible SQL in dev
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
-updated_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:09'
 labels:
   - roadmap
   - persistence
   - backend
   - adapters
+  - 'epic:persistence'
 dependencies: []
 priority: medium
 ---
