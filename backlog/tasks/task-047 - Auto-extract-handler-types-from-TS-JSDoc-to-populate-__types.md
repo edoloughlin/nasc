@@ -1,9 +1,10 @@
 ---
 id: task-047
 title: Auto-extract handler types from TS/JSDoc to populate __types
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-10-12 15:04'
+updated_date: '2025-10-12 15:44'
 labels:
   - dx
   - tooling
