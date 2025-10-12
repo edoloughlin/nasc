@@ -4,11 +4,12 @@ title: 'Epic: Persistence & Data Model'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:07'
-updated_date: '2025-10-12 11:08'
+updated_date: '2025-10-12 11:09'
 labels:
   - epic
   - persistence
   - backend
+  - 'epic:persistence'
 dependencies:
   - task-002
   - task-008
