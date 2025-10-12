@@ -12,6 +12,8 @@ export const TodoListHandler = {
       items: [
         { id: "1", title: "Learn Nasc", completed: true },
         { id: "2", title: "Build an app", completed: false },
+        { id: "3", title: "Write tests", completed: false },
+        { id: "4", title: "Ship it", completed: false },
       ],
     };
   },

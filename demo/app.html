@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Nasc Demo • App</title>
     <link rel="stylesheet" href="/styles.css" />
+    <script src="/traffic-tap.js"></script>
     <script type="module" src="/nasc.js"></script>
     <script src="/status.js" defer></script>
   </head>
@@ -53,9 +54,17 @@
                   <span class="todo-title" na-bind="title"></span>
                 </label>
                 <div>
-                  <button class="btn" style="padding:6px 10px" na-click="move_up" data-id="{{id}}">↑</button>
-                  <button class="btn" style="padding:6px 10px" na-click="move_down" data-id="{{id}}">↓</button>
-                  <button class="btn" style="padding:6px 10px; background: linear-gradient(180deg, var(--danger), #e85a5a)" na-click="remove_todo" data-id="{{id}}">✕</button>
+                  <button class="icon-btn" na-click="move_up" data-id="{{id}}" aria-label="Move up">
+                    <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <path d="M8 3 L2 11 H14 Z" />
+                    </svg>
+                  </button>
+                  <button class="icon-btn" na-click="move_down" data-id="{{id}}" aria-label="Move down">
+                    <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <path d="M2 5 L14 5 L8 13 Z" />
+                    </svg>
+                  </button>
+                  <button class="icon-btn" na-click="remove_todo" data-id="{{id}}">✕</button>
                 </div>
               </li>
             </template>
@@ -63,12 +72,16 @@
         </div>
       </div>
       <!-- Transport toggle (demo-only) -->
-      <div class="note" style="margin-top:16px">Transport:
+      <div class="note" style="margin-top:16px; display:flex; align-items:center; gap:8px;">
+        Transport:
         <select id="transportSel" class="input" style="width:auto; padding:6px 10px; margin-left:8px">
           <option value="sse">SSE (default)</option>
           <option value="ws">WebSocket</option>
         </select>
-      </div>
+        <div class="note" style="margin:0 0 0 12px">
+          Manifest: <a href="/nasc/manifest" target="_blank" rel="noopener noreferrer">/nasc/manifest</a>
+        </div>
+     </div>
     </div>
     <script>
       // Demo-only transport toggle: updates ?transport= and reloads
@@ -83,6 +96,7 @@
           const usp = new URLSearchParams(location.search);
           if (nv === 'sse') usp.delete('transport'); else usp.set('transport', nv);
           const url = location.pathname + (usp.toString() ? '?' + usp.toString() : '');
+          try { localStorage.setItem('nascDemo.reconnecting', '1'); } catch {}
           location.assign(url);
         });
       })();

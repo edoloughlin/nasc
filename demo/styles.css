@@ -25,6 +25,11 @@ body.nasc-demo {
   font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
+/* Links: ensure good contrast in dark mode */
+a { color: var(--primary); text-decoration: underline; }
+a:visited { color: #9cc3ff; }
+a:hover { filter: brightness(1.1); }
+
 .container {
   max-width: 900px;
   margin: 48px auto 80px;
@@ -110,3 +115,72 @@ body.nasc-demo {
 
 /* Inline error (demo-only) */
 .error { color: var(--danger); font-size: 12px; min-height: 1em; }
+
+/* Icon buttons for list item controls */
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  min-width: 30px;
+  height: 28px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.icon-btn:hover { color: var(--text); }
+.icon-btn:active { transform: translateY(0.5px); }
+
+/* Emphasize destructive action */
+.icon-btn[na-click="remove_todo"] { color: var(--danger); }
+.icon-btn[na-click="remove_todo"]:hover { color: #ff8a8a; }
+
+/* SVG icon sizing and color */
+.icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  fill: currentColor;
+}
+
+/* Transport tap card */
+.traffic-log {
+  background: #0f1421;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  overflow: auto;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.traffic-card { margin-bottom: 0; }
+.traffic-log .row { margin: 0 0 8px; }
+.traffic-log .row:last-child { margin-bottom: 0; }
+.traffic-log .meta { display: block; color: var(--muted); margin-bottom: 4px; font-size: 11px; }
+.traffic-log pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+.traffic-controls { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Hide up button for first item and down button for last item */
+/* Ignore the <template> node when determining first/last item */
+.todo-list > li:first-of-type [na-click="move_up"] { display: none; }
+.todo-list > li:last-of-type  [na-click="move_down"] { display: none; }
+.traffic-split {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 10px;
+}
+.traffic-list {
+  background: #0f1421;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: auto;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.traffic-item { padding: 8px 10px; cursor: pointer; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); }
+.traffic-item:hover, .traffic-item:focus { color: var(--text); outline: none; background: rgba(255,255,255,0.04); }
+.traffic-item.selected { color: var(--text); background: rgba(255,255,255,0.08); }
+.traffic-item:last-child { border-bottom: none; }
+.traffic-detail { background: #0f1421; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: auto; }
+.traffic-detail pre { margin: 0; padding: 10px; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; white-space: pre-wrap; word-break: break-word; }
