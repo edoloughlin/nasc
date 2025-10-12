@@ -4,6 +4,7 @@ title: Standardized error surfaces (field/form)
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
+updated_date: '2025-10-12 11:03'
 labels:
   - annoyances
   - frontend
@@ -16,7 +17,7 @@ dependencies: []
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Standardize server responses to include field and form errors; map to  and provide default outlet (ANNOYANCES.md #6; ROADMAP).
+Standardize server responses to include field and form errors; map to [na-error] and provide default outlet (ANNOYANCES.md #6; ROADMAP).
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
