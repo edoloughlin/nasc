@@ -4,11 +4,13 @@ title: 'Transport troubleshooting docs (proxy/CDN, headers, timeouts)'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:07'
 labels:
   - roadmap
   - docs
   - transport
 dependencies: []
+priority: medium
 ---
 
 ## Description
