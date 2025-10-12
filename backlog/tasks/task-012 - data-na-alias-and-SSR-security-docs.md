@@ -4,12 +4,13 @@ title: data-na-* alias and SSR/security docs
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
-updated_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:09'
 labels:
   - annoyances
   - frontend
   - security
   - docs
+  - 'epic:dx'
 dependencies: []
 priority: medium
 ---
