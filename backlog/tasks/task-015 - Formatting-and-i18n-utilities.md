@@ -4,13 +4,14 @@ title: Formatting and i18n utilities
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
-updated_date: '2025-10-12 11:03'
+updated_date: '2025-10-12 11:07'
 labels:
   - annoyances
   - frontend
   - i18n
   - ux
 dependencies: []
+priority: medium
 ---
 
 ## Description
