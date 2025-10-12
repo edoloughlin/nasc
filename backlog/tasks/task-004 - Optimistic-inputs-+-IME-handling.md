@@ -24,4 +24,6 @@ Local-echo inputs with reconciliation; handle IME composition; add na-debounce a
 - [ ] #1 Implement optimistic update with rollback on validation error
 - [ ] #2 Respect IME composition boundaries
 - [ ] #3 Add tests and docs
+
+- [ ] #4 Add/extend na-debounce and na-on semantics
 <!-- AC:END -->
