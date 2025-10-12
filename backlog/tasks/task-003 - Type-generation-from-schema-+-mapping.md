@@ -4,6 +4,7 @@ title: Type generation from schema + mapping
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
+updated_date: '2025-10-12 11:07'
 labels:
   - annoyances
   - tooling
@@ -11,6 +12,7 @@ labels:
   - dx
   - docs
 dependencies: []
+priority: medium
 ---
 
 ## Description
