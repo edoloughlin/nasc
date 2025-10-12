@@ -11,6 +11,7 @@ labels:
   - i18n
   - ux
   - 'epic:dx'
+  - 'epic:frontend-ux'
 dependencies: []
 priority: medium
 ---
