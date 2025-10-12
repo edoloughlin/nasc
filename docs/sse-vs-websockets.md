@@ -71,7 +71,7 @@ Files to touch:
 2. Transport selection
    - Default: SSE.
    - Global override: `connect({ transport: 'ws' | 'sse' | 'auto' })` where `auto` prefers WS only if a feature requests it.
-   - Per‑instance override: allow `na-transport="ws|sse|inherit"` on `na-instance` containers; the client chooses WS if any active instance requests WS.
+   - Per‑instance override: allow `na-transport="ws|sse|inherit"` on `na-scope` containers; the client chooses WS if any active instance requests WS.
 
 3. Identity
    - Generate/stash a `clientId` in `localStorage` and append to `/events` + include in POST body.
@@ -168,7 +168,7 @@ Phase 4 — Clean up and harden
 ## Per‑Instance Transport (Not Supported)
 
 Current policy
-- Use a single transport per page/client (chosen by code or `?transport=`). All `na-instance` scopes on a page share that transport.
+- Use a single transport per page/client (chosen by code or `?transport=`). All `na-scope` scopes on a page share that transport.
 - Do not mix transports per instance for now. If multiple components bind to the same instance, they implicitly share the page’s transport.
 
 Rationale

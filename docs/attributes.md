@@ -14,11 +14,11 @@ This catalogue mirrors the thorough attribute listings in the htmx docs. Each en
 | --- | --- |
 | Scope | `<body>` element |
 | Purpose | Auto-start the Nasc client when the DOM becomes ready. |
-| Client behavior | Calls `connect({})` exactly once, issues `mount` events for every `na-instance`, and begins streaming patches. |
+| Client behavior | Calls `connect({})` exactly once, issues `mount` events for every `na-scope`, and begins streaming patches. |
 
 Use this in static HTML pages to eliminate manual JavaScript bootstrapping. Remove it if you want to delay connection until your own script calls `connect()` (for partial hydration or testing).
 
-## `na-instance="Type:id"`
+## `na-scope="Type:id"`
 
 | Property | Details |
 | --- | --- |
@@ -56,7 +56,7 @@ Pair `na-each="items"` with `na-key="id"` and optionally `na-type="Todo"` for sc
 | Purpose | Send form data to a server handler without page reload. |
 | Client behavior | Prevents default submission, serializes `FormData(form)` into an object, and posts `{ event, instance, payload }` through the active transport. |
 
-Pair this with standard `<button type="submit">` controls. Input names become payload keys. Keep the form inside the correct `na-instance` so the payload routes to the right handler.
+Pair this with standard `<button type="submit">` controls. Input names become payload keys. Keep the form inside the correct `na-scope` so the payload routes to the right handler.
 
 ## `na-click="eventName"`
 
@@ -88,7 +88,7 @@ A minimal instance often looks like this:
 
 ```html
 <body na-connect>
-  <div na-instance="TodoList:my-list">
+  <div na-scope="TodoList:my-list">
     <form na-submit="add_todo">
       <input name="title" placeholder="What needs to be done?" />
       <button>Add</button>

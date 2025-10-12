@@ -60,7 +60,7 @@ The processor is transport-agnostic: send it messages, forward the resulting pat
 
 The SSR middleware inspects HTML responses before sending them to the browser:
 
-1. Parse each `na-instance` attribute.
+1. Parse each `na-scope` attribute.
 2. Call `mount()` to fetch initial state.
 3. Replace matching `na-bind` inner text and `<input name>` values with the returned data.
 

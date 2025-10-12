@@ -10,7 +10,7 @@ This section explains the mental model that powers Nasc. If you understand how i
 
 ## Instances & State Ownership
 
-Every interactive region declares `na-instance="Type:id"`. The prefix before the colon (`Type`) selects the handler object on the server; the suffix (`id`) identifies which record that handler should load and mutate. Instances scope everything inside—bindings, events, and validation.
+Every interactive region declares `na-scope="Type:id"`. The prefix before the colon (`Type`) selects the handler object on the server; the suffix (`id`) identifies which record that handler should load and mutate. Instances scope everything inside—bindings, events, and validation.
 
 When the client connects it automatically issues a `mount` event for every instance it finds. The payload includes a friendly parameter like `userId` or `todoListId` (derived from the type name) so your handler can hydrate initial state.
 

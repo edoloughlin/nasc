@@ -2,7 +2,7 @@
  * Nasc client: dual-transport (WS or SSE + POST)
  * - transport.connect(onOpen, onPatches)
  * - transport.send(event)
- * - apply scoped patches to elements with na-bind within the matching na-instance
+ * - apply scoped patches to elements with na-bind within the matching na-scope
  */
 export function connect(arg) {
   const transport = createTransport(arg);
@@ -17,8 +17,8 @@ export function connect(arg) {
   function onOpen() {
     console.log("[nasc] connected");
     // If SSR has already rendered content, don't re-mount
-    document.querySelectorAll("[na-instance]").forEach(container => {
-      const instance = container.getAttribute("na-instance");
+    document.querySelectorAll("[na-scope]").forEach(container => {
+      const instance = container.getAttribute("na-scope");
       const [type, id] = instance.split(":");
       transport.send({
         event: "mount",
@@ -51,14 +51,14 @@ export function connect(arg) {
         const key = `${type}.${p.prop}`;
         if (schema && !validatedOnce.has(key)) {
           if (!validateBinding(schema, p.prop, p.value)) {
-            const containerEl = document.querySelector(`[na-instance="${p.instance}"]`);
+            const containerEl = document.querySelector(`[na-scope="${p.instance}"]`);
             const typedSel = `[na-bind="${type}:${p.prop}"]`;
             const el = containerEl && (containerEl.querySelector(`[na-bind="${p.prop}"]`) || containerEl.querySelector(typedSel) || containerEl.querySelector(`[name="${p.prop}"]`));
             reportValidationError(`Schema mismatch for ${type}.${p.prop}`, el || containerEl || null);
           }
           validatedOnce.add(key);
         }
-        const instanceSel = `[na-instance="${p.instance}"]`;
+        const instanceSel = `[na-scope="${p.instance}"]`;
         const container = document.querySelector(instanceSel);
         if (!container) continue;
 
@@ -176,8 +176,8 @@ export function connect(arg) {
     const form = e.target;
     if (!form.hasAttribute("na-submit")) return;
     e.preventDefault();
-    const container = form.closest("[na-instance]");
-    const instance = container?.getAttribute("na-instance");
+    const container = form.closest("[na-scope]");
+    const instance = container?.getAttribute("na-scope");
     const payload = Object.fromEntries(new FormData(form).entries());
     transport.send({
       event: form.getAttribute("na-submit"),
@@ -191,8 +191,8 @@ export function connect(arg) {
     const el = e.target.closest("[na-click]");
     if (!el) return;
     e.preventDefault();
-    const container = el.closest("[na-instance]");
-    const instance = container?.getAttribute("na-instance");
+    const container = el.closest("[na-scope]");
+    const instance = container?.getAttribute("na-scope");
     const payload = {};
     for (const { name, value } of el.attributes) {
       if (name.startsWith("data-")) payload[name.slice(5)] = value;
@@ -352,7 +352,7 @@ function getDomPath(el) {
 // Validate all declared DOM bindings under a given instance container against the schema
 // Flags unknown properties as errors (overlay) since they won't be caught by patch-time checks.
 function getContainerForInstance(instance) {
-  try { return document.querySelector(`[na-instance="${instance}"]`); } catch { return null; }
+  try { return document.querySelector(`[na-scope="${instance}"]`); } catch { return null; }
 }
 
 function validateDeclaredBindings(instance, type) {
@@ -461,9 +461,9 @@ function scheduleTypeValidation(type) {
     try {
       const schema = (window.__NASC_SCHEMAS && window.__NASC_SCHEMAS[type]) || null;
       if (!schema || !schema.properties) return;
-      const containers = document.querySelectorAll(`[na-instance^="${type}:"]`);
+      const containers = document.querySelectorAll(`[na-scope^="${type}:"]`);
       containers.forEach((el) => {
-        const inst = el.getAttribute('na-instance');
+        const inst = el.getAttribute('na-scope');
         if (inst) validateDeclaredBindings(inst, type);
       });
     } catch {}

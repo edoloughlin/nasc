@@ -306,7 +306,7 @@ function createSsrMiddleware({ handlers, rootDir }) {
     try {
       const htmlPath = rootDir ? path.join(rootDir, page) : path.join(process.cwd(), page);
       let html = await fs.readFile(htmlPath, "utf-8");
-      const instanceMatches = html.matchAll(/na-instance=\"([^\"]+)\"/g);
+      const instanceMatches = html.matchAll(/na-scope=\"([^\"]+)\"/g);
       for (const match of instanceMatches) {
         const instance = match[1];
         const [type, id] = instance.split(":");

@@ -36,7 +36,7 @@
 
 **5) Implicit instance scoping**
 
-* **Annoyance:** `na-instance="User:currentUser"` + `na-bind="name"` is clean, but nested scopes can be confusing; devs may not realize which instance a bind resolves to.
+* **Annoyance:** `na-scope="User:currentUser"` + `na-bind="name"` is clean, but nested scopes can be confusing; devs may not realize which instance a bind resolves to.
 * **Fix:**
 
   * Add `na-scope-inspector` (hover to see the resolved instance/type for any node).
@@ -94,7 +94,7 @@
 * **Annoyance:** Pure client patching → blank initial content hurts SEO and TTI.
 * **Fix:**
 
-  * Support **SSR with initial state hydration**; server renders HTML with `na-instance` and values, client only attaches.
+  * Support **SSR with initial state hydration**; server renders HTML with `na-scope` and values, client only attaches.
   * Progressive enhancement: page works without WS, forms do full POST fallback.
 
 **13) Accessibility**

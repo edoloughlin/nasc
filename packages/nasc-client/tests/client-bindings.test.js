@@ -121,7 +121,7 @@ async function flushAsync(times = 1) {
 
 test('bindUpdate patches update text nodes and input values', async () => {
   const { document, fetchCalls, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <span class="title" na-bind="title"></span>
       <input type="text" name="title" />
     </div>
@@ -161,7 +161,7 @@ test('bindUpdate patches update text nodes and input values', async () => {
 
 test('array bindUpdate hydrates keyed templates with na-each', async () => {
   const { document, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <ul>
         <template na-each="items" na-key="id">
           <li>
@@ -209,7 +209,7 @@ test('array bindUpdate hydrates keyed templates with na-each', async () => {
 
 test('typed na-bind expressions receive updates alongside untyped binds', async () => {
   const { document, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <span class="plain" na-bind="title"></span>
       <span class="typed" na-bind="Todo:title"></span>
     </div>
@@ -236,7 +236,7 @@ test('typed na-bind expressions receive updates alongside untyped binds', async 
 
 test('bindUpdate updates checkbox, textarea, and select bindings', async () => {
   const { document, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <input type="checkbox" na-bind="done" />
       <textarea na-bind="notes"></textarea>
       <select na-bind="priority">
@@ -278,7 +278,7 @@ test('bindUpdate updates checkbox, textarea, and select bindings', async () => {
 
 test('template bindUpdate keeps controls synchronized and preserves scope', async () => {
   const { document, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <ul>
         <template na-each="items" na-key="id" na-type="TodoItem">
           <li data-id="placeholder">
@@ -366,7 +366,7 @@ test('template bindUpdate keeps controls synchronized and preserves scope', asyn
 
 test('schema patches validate bindings with scoped inference', async () => {
   const { document, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <input type="text" name="label" />
       <span na-bind="title"></span>
       <template na-each="items" na-key="id" na-type="TodoItem">
@@ -432,7 +432,7 @@ test('schema patches validate bindings with scoped inference', async () => {
 
 test('SSE transport falls back to WebSocket after repeated errors', async () => {
   const { document, MockEventSource } = setupDom(`
-    <div na-instance="Todo:1">
+    <div na-scope="Todo:1">
       <span na-bind="title"></span>
     </div>
   `);

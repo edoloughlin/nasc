@@ -97,7 +97,7 @@ Bring your own ORM
 * You can optionally annotate types to improve validation clarity:
   * Lists: `<template na-each="items" na-type="Todo" na-key="id">…` tells the client that bindings inside the template target the `Todo` schema.
   * Single binds: `<span na-bind="name" na-type="User">` or shorthand `<span na-bind="User:name">`.
-* Instance scoping (`na-instance="Type:id"`) still controls where patches apply; `na-type` affects validation and developer tooling only.
+* Instance scoping (`na-scope="Type:id"`) still controls where patches apply; `na-type` affects validation and developer tooling only.
 * If no `na-type` is provided, the client infers list item types from your schema’s `$ref` when possible; otherwise it skips validation to avoid false positives.
 
 See `docs/schemas.md` for a deeper look at how schemas are structured, pushed by the server, and used by the client for validation and typed bindings.
@@ -107,7 +107,7 @@ See `docs/schemas.md` for a deeper look at how schemas are structured, pushed by
 | Attribute            | Where                 | Purpose                                                        |
 |----------------------|-----------------------|----------------------------------------------------------------|
 | `na-connect`         | `<body>`              | Auto‑connect the client to the backend on page load.          |
-| `na-instance`        | Any container         | Scope all binds/events inside to `Type:id` (e.g., `User:42`). |
+| `na-scope`        | Any container         | Scope all binds/events inside to `Type:id` (e.g., `User:42`). |
 | `na-bind`            | Any element/input     | Bind text/value to a state property (e.g., `name`).           |
 | `na-each`            | `<template>`          | Repeat template content for each item of an array.            |
 | `na-key`             | `<template>`          | Stable key for items in `na-each` (e.g., `id`).               |
@@ -116,15 +116,15 @@ See `docs/schemas.md` for a deeper look at how schemas are structured, pushed by
 | `na-type` (optional) | Any / `<template>`    | Hint the schema type for validation (e.g., `Todo`).           |
 
 Notes
-* Typed bind shorthand: `na-bind="Type:prop"` explicitly targets a type for validation; patch routing still uses the nearest `na-instance`.
-* Inputs with `name="prop"` are auto‑updated by patches for `prop` within the same `na-instance`.
+* Typed bind shorthand: `na-bind="Type:prop"` explicitly targets a type for validation; patch routing still uses the nearest `na-scope`.
+* Inputs with `name="prop"` are auto‑updated by patches for `prop` within the same `na-scope`.
 * For lists, place `na-each` and `na-key` on a `<template>` inside a container bound with `na-bind="items"`.
 
 ### Minimal Example
 
 ```
 <body na-connect>
-  <div na-instance="User:current">
+  <div na-scope="User:current">
     <h2>Hello, <span na-bind="name">Guest</span></h2>
     <form na-submit="save_profile">
       <input name="name">

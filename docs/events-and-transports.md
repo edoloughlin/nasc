@@ -71,7 +71,7 @@ To make it easy to reason about event coverage, the Express integration publishe
 
 ## Error Handling
 
-- Unknown handler type: returns an error patch so you can diagnose mismatched `na-instance` values.
+- Unknown handler type: returns an error patch so you can diagnose mismatched `na-scope` values.
 - Unknown event: `applyEvent` throws a descriptive error and stops persistence, preventing silent failures.
 - Validation overlay: the client warns once for schema mismatches and surfaces unknown properties in the UI.
 
