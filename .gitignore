@@ -1,3 +1,10 @@
 CONVO.md
 node_modules
 dist
+# Emacs: backup, auto-save and lock files
+*~
+\#*\#
+.#*
+# Emacs: desktop session files (if created in repo)
+.emacs.desktop
+.emacs.desktop.lock
