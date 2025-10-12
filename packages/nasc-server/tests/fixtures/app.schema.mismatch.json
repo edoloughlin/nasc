@@ -1,0 +1,32 @@
+{
+  "$id": "/schemas/app.schema.json",
+  "$defs": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email_address": { "type": "string" }
+      },
+      "required": ["id", "name", "email_address"]
+    },
+    "Todo": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "completed": { "type": "boolean" }
+      },
+      "required": ["id", "title", "completed"]
+    },
+    "TodoList": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/Todo" } }
+      },
+      "required": ["id", "items"]
+    }
+  }
+}
+
