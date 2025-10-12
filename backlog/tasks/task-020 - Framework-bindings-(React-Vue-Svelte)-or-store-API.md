@@ -4,12 +4,13 @@ title: Framework bindings (React/Vue/Svelte) or store API
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
-updated_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:09'
 labels:
   - annoyances
   - ecosystem
   - frontend
   - bindings
+  - 'epic:ecosystem'
 dependencies: []
 priority: medium
 ---
