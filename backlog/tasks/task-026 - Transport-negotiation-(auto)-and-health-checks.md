@@ -4,11 +4,13 @@ title: Transport negotiation (auto) and health checks
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:07'
 labels:
   - roadmap
   - transport
   - network
 dependencies: []
+priority: medium
 ---
 
 ## Description
