@@ -4,6 +4,7 @@ title: Per‑instance transport selection (deferred)
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:03'
 labels:
   - roadmap
   - transport
@@ -15,7 +16,7 @@ dependencies: []
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Add  on instances; single transport per instance per client; sequencing and fallback (ROADMAP Transport; SSE vs WS doc).
+Add na-transport on instances; single transport per instance per client; sequencing and fallback (ROADMAP Transport; SSE vs WS doc).
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
