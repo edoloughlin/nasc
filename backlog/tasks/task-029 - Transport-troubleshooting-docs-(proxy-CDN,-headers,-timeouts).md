@@ -4,11 +4,12 @@ title: 'Transport troubleshooting docs (proxy/CDN, headers, timeouts)'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
-updated_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:09'
 labels:
   - roadmap
   - docs
   - transport
+  - 'epic:dx'
 dependencies: []
 priority: medium
 ---
