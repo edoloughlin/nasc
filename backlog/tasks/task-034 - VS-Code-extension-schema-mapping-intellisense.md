@@ -4,12 +4,14 @@ title: 'VS Code extension: schema/mapping intellisense'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
+updated_date: '2025-10-12 11:07'
 labels:
   - roadmap
   - tooling
   - dx
   - editors
 dependencies: []
+priority: medium
 ---
 
 ## Description
