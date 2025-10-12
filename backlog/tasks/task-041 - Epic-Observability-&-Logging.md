@@ -4,11 +4,14 @@ title: 'Epic: Observability & Logging'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:08'
 labels:
   - epic
   - observability
   - logging
-dependencies: []
+dependencies:
+  - task-011
+  - task-033
 priority: medium
 ---
 
