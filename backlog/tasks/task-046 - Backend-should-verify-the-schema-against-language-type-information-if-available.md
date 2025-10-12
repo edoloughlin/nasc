@@ -6,10 +6,11 @@ title: >-
 status: Done
 assignee: []
 created_date: '2025-10-12 14:49'
-updated_date: '2025-10-12 15:44'
+updated_date: '2025-10-12 15:45'
 labels:
   - 'epic:dx'
 dependencies: []
+priority: high
 ordinal: 1000
 ---
 
