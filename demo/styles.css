@@ -146,7 +146,41 @@ a:hover { filter: brightness(1.1); }
   fill: currentColor;
 }
 
+/* Transport tap card */
+.traffic-log {
+  background: #0f1421;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  overflow: auto;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.traffic-card { margin-bottom: 0; }
+.traffic-log .row { margin: 0 0 8px; }
+.traffic-log .row:last-child { margin-bottom: 0; }
+.traffic-log .meta { display: block; color: var(--muted); margin-bottom: 4px; font-size: 11px; }
+.traffic-log pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+.traffic-controls { display: inline-flex; align-items: center; gap: 6px; }
+
 /* Hide up button for first item and down button for last item */
 /* Ignore the <template> node when determining first/last item */
 .todo-list > li:first-of-type [na-click="move_up"] { display: none; }
 .todo-list > li:last-of-type  [na-click="move_down"] { display: none; }
+.traffic-split {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 10px;
+}
+.traffic-list {
+  background: #0f1421;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: auto;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.traffic-item { padding: 8px 10px; cursor: pointer; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); }
+.traffic-item:hover, .traffic-item:focus { color: var(--text); outline: none; background: rgba(255,255,255,0.04); }
+.traffic-item.selected { color: var(--text); background: rgba(255,255,255,0.08); }
+.traffic-item:last-child { border-bottom: none; }
+.traffic-detail { background: #0f1421; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: auto; }
+.traffic-detail pre { margin: 0; padding: 10px; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; white-space: pre-wrap; word-break: break-word; }
