@@ -4,11 +4,12 @@ title: 'Epic: Scaling & Ops'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:07'
-updated_date: '2025-10-12 11:08'
+updated_date: '2025-10-12 11:09'
 labels:
   - epic
   - ops
   - scaling
+  - 'epic:ops'
 dependencies:
   - task-023
   - task-031
