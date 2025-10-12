@@ -1,5 +1,6 @@
 remote_theme: just-the-docs/just-the-docs
 color_scheme: light
+theme_switcher: true
 search_enabled: true
 heading_anchors: true
 title: "Nasc Documentation"
