@@ -4,13 +4,14 @@ title: Per‑instance transport selection (deferred)
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
-updated_date: '2025-10-12 11:03'
+updated_date: '2025-10-12 11:07'
 labels:
   - roadmap
   - transport
   - client
   - server
 dependencies: []
+priority: low
 ---
 
 ## Description
