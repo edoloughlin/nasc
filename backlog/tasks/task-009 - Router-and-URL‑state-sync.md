@@ -4,6 +4,7 @@ title: Router and URL‑state sync
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
+updated_date: '2025-10-12 11:03'
 labels:
   - annoyances
   - frontend
@@ -21,7 +22,6 @@ Provide router that binds route params to mount() and syncs selected state to UR
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [ ] #1 Route param → instance plumbing
-- [ ] #2 mappings for query/hash
-- [ ] #3 SSR compatibility and tests
-- [ ] #4 Docs and examples
+- [ ] #2 SSR compatibility and tests
+- [ ] #3 Docs and examples
 <!-- AC:END -->
