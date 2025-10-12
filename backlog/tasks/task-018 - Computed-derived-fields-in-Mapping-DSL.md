@@ -4,12 +4,14 @@ title: Computed/derived fields in Mapping DSL
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
+updated_date: '2025-10-12 11:07'
 labels:
   - annoyances
   - persistence
   - design
   - backend
 dependencies: []
+priority: medium
 ---
 
 ## Description
