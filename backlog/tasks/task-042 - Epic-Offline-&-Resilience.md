@@ -4,11 +4,12 @@ title: 'Epic: Offline & Resilience'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:07'
-updated_date: '2025-10-12 11:08'
+updated_date: '2025-10-12 11:09'
 labels:
   - epic
   - offline
   - resilience
+  - 'epic:offline'
 dependencies:
   - task-022
   - task-036
