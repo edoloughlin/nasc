@@ -3,13 +3,14 @@ id: task-046
 title: >-
   Backend should verify the schema against language type information if
   available
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-10-12 14:49'
-updated_date: '2025-10-12 15:39'
+updated_date: '2025-10-12 15:44'
 labels:
   - 'epic:dx'
 dependencies: []
+ordinal: 1000
 ---
 
 ## Description
