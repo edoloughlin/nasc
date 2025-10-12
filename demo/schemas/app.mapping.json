@@ -1,19 +1,19 @@
 {
   "$id": "/schemas/app.mapping.json",
   "User": {
-    "x-nc:store": {
+    "x-na:store": {
       "entity": "users",
       "pk": "id"
     }
   },
   "Todo": {
-    "x-nc:store": {
+    "x-na:store": {
       "entity": "todos",
       "pk": "id"
     }
   },
   "TodoList": {
-    "x-nc:store": {
+    "x-na:store": {
       "entity": "todo_lists",
       "pk": "id"
     }
