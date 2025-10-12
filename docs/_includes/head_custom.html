@@ -1,38 +1,44 @@
 <script>
-(function () {
-  var KEY = 'jtd-theme'; // just-the-docs uses this key
-  var root = document.documentElement;
+(function(){
+  var KEY='jtd-theme';
+  var root=document.documentElement;
 
-  function apply(theme) {
-    if (theme) root.setAttribute('data-theme', theme);
+  function setTheme(t){
+    if(t==='light'||t==='dark'){ root.setAttribute('data-theme',t); }
   }
 
-  var stored = localStorage.getItem(KEY);
-  if (stored === 'light' || stored === 'dark') {
-    apply(stored);                         // honour prior user choice
-  } else {
-    var mq = window.matchMedia('(prefers-color-scheme: dark)');
-    apply(mq.matches ? 'dark' : 'light');  // follow system on first visit
-    // keep following system unless user explicitly picks a theme
-    mq.addEventListener('change', function (e) {
-      if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+  var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+  function autoTheme(){ return (mq && mq.matches) ? 'dark' : 'light'; }
+
+  // read pref; default to 'auto'
+  var pref=localStorage.getItem(KEY);
+  if(pref!=='light'&&pref!=='dark'){ pref='auto'; }
+
+  // initial apply
+  setTheme(pref==='auto' ? autoTheme() : pref);
+
+  // follow system while in 'auto'
+  if(mq && mq.addEventListener){
+    mq.addEventListener('change', function(e){
+      if((localStorage.getItem(KEY)||'auto')==='auto'){
+        setTheme(e.matches ? 'dark' : 'light');
+      }
     });
   }
 
-  // If the theme switcher is enabled, keep localStorage in sync
-  document.addEventListener('click', function (e) {
-    var t = e.target;
-    if (!t) return;
-    // handles both the switcher button and its <input>
-    if (t.closest && t.closest('[data-theme-switcher]')) {
-      // read current attribute after just-the-docs toggles it
-      requestAnimationFrame(function () {
-        var current = root.getAttribute('data-theme');
-        if (current === 'light' || current === 'dark') {
-          localStorage.setItem(KEY, current);
-        }
-      });
+  // persist when the built-in theme switcher is used
+  document.addEventListener('click', function(ev){
+    var el=ev.target;
+    while(el){
+      if(el.hasAttribute && el.hasAttribute('data-theme-switcher')){
+        setTimeout(function(){
+          var cur=root.getAttribute('data-theme');
+          if(cur==='light'||cur==='dark'){ localStorage.setItem(KEY, cur); }
+        },0);
+        break;
+      }
+      el=el.parentNode;
     }
-  });
+  }, true);
 })();
 </script>
