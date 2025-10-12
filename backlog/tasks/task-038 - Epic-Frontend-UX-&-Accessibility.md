@@ -4,12 +4,13 @@ title: 'Epic: Frontend UX & Accessibility'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:07'
-updated_date: '2025-10-12 11:08'
+updated_date: '2025-10-12 11:09'
 labels:
   - epic
   - frontend
   - ux
   - a11y
+  - 'epic:frontend-ux'
 dependencies:
   - task-004
   - task-005
