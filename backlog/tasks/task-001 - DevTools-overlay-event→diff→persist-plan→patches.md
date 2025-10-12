@@ -4,6 +4,7 @@ title: 'DevTools overlay: event→diff→persist plan→patches'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
+updated_date: '2025-10-12 11:07'
 labels:
   - annoyances
   - dx
@@ -12,6 +13,7 @@ labels:
   - devtools
   - docs
 dependencies: []
+priority: high
 ---
 
 ## Description
