@@ -4,11 +4,15 @@ title: 'Epic: CI & Testing'
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:08'
 labels:
   - epic
   - ci
   - testing
-dependencies: []
+dependencies:
+  - task-010
+  - task-024
+  - task-027
 priority: high
 ---
 
