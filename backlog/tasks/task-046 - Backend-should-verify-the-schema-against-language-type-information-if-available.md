@@ -6,7 +6,7 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2025-10-12 14:49'
-updated_date: '2025-10-12 14:52'
+updated_date: '2025-10-12 14:54'
 labels:
   - 'epic:dx'
 dependencies: []
@@ -21,11 +21,12 @@ Where the handler implementation provides type information, the backend should v
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-1. Inventory type sources in handlers (TS/JSDoc); choose extraction path.
-2. Implement type→schema extraction (TS program) for handler I/O; JSDoc fallback.
-3. Add schema compatibility checker vs app.schema.json (assignability, path‑level diffs).
-4. Wire into dev/CI: warn on dev start; CI task fails on mismatch; env flag STRICT_SCHEMA_TYPES.
-5. Tests: extractor/checker unit tests; fixtures for match/mismatch; backend integration test.
-6. Perf: cache generated schemas; incremental rebuild on file changes in dev.
-7. Docs: usage, flags, annotations; examples for TS and JSDoc.
+1. Inventory type sources (TS/JSDoc); choose extraction path.
+2. Implement TS program-based type→schema extraction for handler I/O; add JSDoc fallback.
+3. Build schema compatibility checker vs app.schema.json (assignability rules; path-level diffs).
+4. Integrate into dev/CI: dev warnings; CI fails on mismatch; STRICT_SCHEMA_TYPES flag.
+5. Unit tests: extractor/checker positive & negative cases with fixtures; coverage ≥ 85%.
+6. Integration tests: backend start/CI flows for match/mismatch; verify error messages.
+7. Performance: cache generated schemas; incremental rebuild on file changes.
+8. Docs: usage, flags, examples (TS and JSDoc).
 <!-- SECTION:PLAN:END -->
