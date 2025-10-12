@@ -21,7 +21,7 @@ Prerequisites
 
 Install and run (pnpm workspace):
 
-```
+```bash
 pnpm i        # install at the repo root (workspace)
 cd demo
 pnpm start    # or: npm start
@@ -90,7 +90,7 @@ This is the most important mental model: HTML declares what to bind and which ev
 
 HTML (from `app.html`):
 
-```
+```html
 <!-- Scope everything below to the User:currentUser instance -->
 <div class="card" na-instance="User:currentUser">
   <h2>Hello, <span na-bind="name">Guest</span></h2>
@@ -107,7 +107,7 @@ HTML (from `app.html`):
 
 What the client sends on submit:
 
-```
+```javascript
 {
   event: "save_profile",
   instance: "User:currentUser",
@@ -117,20 +117,20 @@ What the client sends on submit:
 
 What the server invokes:
 
-```
+```typescript
 // handlers['User'] is the User handler object
 await handlers['User'].save_profile(payload, currentState)
 ```
 
 The returned next state is diffed against `currentState`, and for each changed property you get a patch:
 
-```
+```javascript
 { action: "bindUpdate", instance: "User:currentUser", prop: "name", value: "…" }
 ```
 
 List items (from `app.html`):
 
-```
+```html
 <div class="card" na-instance="TodoList:my-list">
   <form class="todo-header" na-submit="add_todo">
     <input class="input" name="title" placeholder="What needs to be done?" />
@@ -158,7 +158,7 @@ List items (from `app.html`):
 - The list template (`<template na-each="items" na-key="id">`) is cloned for each item; `na-type="Todo"` lets the validator know inner binds (like `title`) belong to `Todo`.
 - Clicking a control inside the list sends the `na-click` event with any `data-*` attributes as payload, for example:
 
-```
+```javascript
 {
   event: "toggle_todo",
   instance: "TodoList:my-list",
@@ -170,7 +170,7 @@ On the server that calls `handlers['TodoList'].toggle_todo(payload, currentState
 
 Server setup (from `demo/index.ts`):
 
-```
+```typescript
 const handlers = { User: UserHandler, TodoList: TodoListHandler };
 attachNasc({ app, server, handlers, schemaProvider: appSchema.$defs, ssr: { rootDir } });
 ```
@@ -215,20 +215,25 @@ Tip: For lists, declare a `<template na-each="items" na-key="id" [na-type="ItemT
 By default, the demo uses an in-memory store. You can switch to SQLite without changing handlers.
 
 1) Install driver
-```
+
+```bash
 cd demo && pnpm i better-sqlite3  # or: npm i better-sqlite3
 ```
 
 2) JSON-column store (simplest)
-```
+
+```bash
 DB_PATH=./demo.sqlite pnpm start
 ```
+
 - Stores entire instances as JSON per type (e.g., `users`, `todo_lists`).
 
 3) Normalized/mapped store (demo mapping)
-```
+
+```bash
 DB_PATH=./demo.sqlite DB_MODE=mapped pnpm start
 ```
+
 - Creates normalized tables using `schemas/app.mapping.json` + `schemas/app.schema.json`.
 - 1:N lists (e.g., `TodoList.items`) are stored in child tables; writes use full-replace semantics for simplicity.
 
