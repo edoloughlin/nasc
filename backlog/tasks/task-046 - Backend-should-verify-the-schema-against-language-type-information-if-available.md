@@ -18,6 +18,18 @@ dependencies: []
 Where the handler implementation provides type information, the backend should verify it against the schema information.
 <!-- SECTION:DESCRIPTION:END -->
 
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Type extraction supports TS handler input/output types
+- [ ] #2 JSDoc @type/@param fallback supported when TS types unavailable
+- [ ] #3 Checker reports path-level diffs vs app.schema.json with clear messages
+- [ ] #4 Dev mode warns on mismatch; CI fails when STRICT_SCHEMA_TYPES=true
+- [ ] #5 Unit tests cover extractor and checker (positive/negative), coverage >= 85%
+- [ ] #6 Integration tests: mismatch blocks CI; match passes with zero warnings
+- [ ] #7 Caching prevents stale results; incremental rebuild reflects file changes
+- [ ] #8 Documentation added for usage, flags, and examples
+<!-- AC:END -->
+
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
