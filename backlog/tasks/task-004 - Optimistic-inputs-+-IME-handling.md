@@ -4,13 +4,14 @@ title: Optimistic inputs + IME handling
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:01'
-updated_date: '2025-10-12 11:03'
+updated_date: '2025-10-12 11:07'
 labels:
   - annoyances
   - frontend
   - ux
   - performance
 dependencies: []
+priority: high
 ---
 
 ## Description
