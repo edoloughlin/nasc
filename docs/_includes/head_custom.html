@@ -1,3 +1,5 @@
+<!-- We can't have JS comments in this file. The Jekyll minifier
+     does not remove them and removes newlines so the JS breaks -->
 <script>
 (function(){
   var KEY='jtd-theme';
@@ -10,14 +12,11 @@
   var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
   function autoTheme(){ return (mq && mq.matches) ? 'dark' : 'light'; }
 
-  // read pref; default to 'auto'
   var pref=localStorage.getItem(KEY);
   if(pref!=='light'&&pref!=='dark'){ pref='auto'; }
 
-  // initial apply
   setTheme(pref==='auto' ? autoTheme() : pref);
 
-  // follow system while in 'auto'
   if(mq && mq.addEventListener){
     mq.addEventListener('change', function(e){
       if((localStorage.getItem(KEY)||'auto')==='auto'){
@@ -26,7 +25,6 @@
     });
   }
 
-  // persist when the built-in theme switcher is used
   document.addEventListener('click', function(ev){
     var el=ev.target;
     while(el){
