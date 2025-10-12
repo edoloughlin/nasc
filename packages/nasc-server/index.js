@@ -56,6 +56,18 @@ function createProcessor(handlers, store, options = {}) {
                 if (cs) initialPatches.push({ action: "schema", instance, type: ct, schema: cs });
               } catch {}
             }
+            // Dev-mode schema vs state warning (path-level keys only)
+            try {
+              const props = (schema && schema.properties) || {};
+              const schemaKeys = new Set(Object.keys(props));
+              const stateKeys = new Set(Object.keys(current || {}));
+              for (const k of stateKeys) {
+                if (!schemaKeys.has(k)) console.warn(`[Nasc] Schema warning: ${type}.${k} not in schema properties`);
+              }
+              for (const k of schemaKeys) {
+                if (!stateKeys.has(k)) console.warn(`[Nasc] Schema warning: ${type} missing property '${k}' from initial state`);
+              }
+            } catch {}
           }
         } catch {}
         // Then include initial bind updates

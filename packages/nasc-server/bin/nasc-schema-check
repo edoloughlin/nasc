@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+/*
+ Simple schema vs TypeScript/JSDoc type checker for Nasc handlers
+ Usage:
+   nasc-schema-check --handlers demo/handlers --schema demo/schemas/app.schema.json [--strict]
+*/
+const path = require('path');
+const { runCheck } = require('../tools/schema-types');
+
+function parseArgs(argv) {
+  const args = { handlers: null, schema: null, strict: false };
+  for (let i = 2; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--handlers') args.handlers = argv[++i];
+    else if (a === '--schema') args.schema = argv[++i];
+    else if (a === '--strict') args.strict = true;
+  }
+  return args;
+}
+
+(function main() {
+  const args = parseArgs(process.argv);
+  if (!args.handlers || !args.schema) {
+    console.error('Usage: nasc-schema-check --handlers <dir> --schema <app.schema.json> [--strict]');
+    process.exit(2);
+  }
+  const code = runCheck({
+    handlersDir: path.resolve(process.cwd(), args.handlers),
+    schemaPath: path.resolve(process.cwd(), args.schema),
+    strict: !!args.strict,
+  });
+  process.exit(code);
+})();
+

@@ -27,7 +27,14 @@ This plan establishes the initial suite of automated tests for the Nasc server p
 - `normalizeSchemaProvider` supports functional and map providers and gracefully handles missing schemas.
 - `createSchemaHandler` responds with the expected HTTP status codes (200, 400, 404, 500) and payload shapes across edge cases.
 
-### 4. Client Bindings (`client-bindings.test.js`)
+### 4. Schema Types Checker (`schema-types.test.js`)
+- Type extractor parses TypeScript interfaces and JSDoc typedefs into JSON Schema fragments.
+- Name normalization maps `FooState` → `Foo` (top-level) and `FooItem[]` → `$ref: #/$defs/Foo`.
+- Generated types from demo handlers match `demo/schemas/app.schema.json` with zero diffs.
+- A minimal TS fixture (`packages/nasc-server/tests/fixtures/ts-handlers/handlers.ts`) validates extractor behaviour without relying on the demo.
+- Strict mode exits non‑zero on mismatches; controlled by `--strict` flag or `STRICT_SCHEMA_TYPES=true`.
+
+### 5. Client Bindings (`client-bindings.test.js`)
 - Simulate SSE-driven patch streams against HTML fragments to ensure mount events post the correct payload and bind updates hydrate text and form controls.
 - Validate keyed template rendering for `na-each` lists so reorder/regeneration logic stays stable.
 - Confirm typed `na-bind` syntax stays in sync with untyped bindings when diff patches arrive.

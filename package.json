@@ -5,7 +5,9 @@
   "type": "commonjs",
   "scripts": {
     "start": "node demo-server.js",
-    "test": "node --test packages/*/tests/*.test.js"
+    "test": "node --test packages/*/tests/*.test.js",
+    "schema:check": "node packages/nasc-server/bin/nasc-schema-check --handlers demo/handlers --schema demo/schemas/app.schema.json",
+    "schema:check:strict": "node packages/nasc-server/bin/nasc-schema-check --handlers demo/handlers --schema demo/schemas/app.schema.json --strict"
   },
   "dependencies": {
     "express": "^4.21.2",
