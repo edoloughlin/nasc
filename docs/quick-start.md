@@ -14,7 +14,7 @@ This walkthrough spins up the demo application, explains how HTML `na-*` attribu
 - [pnpm](https://pnpm.io/) (recommended) or npm
 - A terminal session inside the repository root
 
-These requirements match the reference demo shipped with the repo.【F:demo/README.md†L16-L45】
+These requirements match the reference demo shipped with the repo.
 
 ## Install & Run the Demo
 
@@ -24,13 +24,13 @@ cd demo
 pnpm start      # boots the Express server on http://localhost:3000
 ```
 
-Open `http://localhost:3000/app.html` in your browser. The `<body na-connect>` hook auto-connects the client to the backend, mounts each declared instance, and begins streaming DOM patches.【F:README.md†L39-L70】【F:demo/README.md†L24-L65】
+Open `http://localhost:3000/app.html` in your browser. The `<body na-connect>` hook auto-connects the client to the backend, mounts each declared instance, and begins streaming DOM patches.
 
 ### Choose a Transport
 
-SSE is the default transport. Append `?transport=ws` to try WebSockets or `?transport=sse` to force SSE. The demo even includes a transport picker so you can observe fallback behavior without editing code.【F:README.md†L56-L66】【F:demo/README.md†L32-L40】
+SSE is the default transport. Append `?transport=ws` to try WebSockets or `?transport=sse` to force SSE. The demo even includes a transport picker so you can observe fallback behavior without editing code.
 
-> **WebSocket optionality** – If the `ws` dependency is missing, Nasc logs a notice and continues in SSE-only mode. Install `ws` at the workspace root when you need bidirectional messaging so that `packages/nasc-server` can resolve it.【F:demo/README.md†L37-L45】【F:packages/nasc-server/index.js†L144-L173】
+> **WebSocket optionality** – If the `ws` dependency is missing, Nasc logs a notice and continues in SSE-only mode. Install `ws` at the workspace root when you need bidirectional messaging so that `packages/nasc-server` can resolve it.
 
 ## Understand the HTML ↔ Handler Contract
 
@@ -65,21 +65,21 @@ When the form submits, the client emits:
 }
 ```
 
-The server routes that payload to `handlers['User'].save_profile` and diffs the returned state. Each changed property becomes a `{ action: "bindUpdate", prop, value }` patch that updates matching `na-bind` and `name` attributes in the DOM.【F:demo/README.md†L48-L170】【F:packages/nasc-server/engine.js†L23-L63】
+The server routes that payload to `handlers['User'].save_profile` and diffs the returned state. Each changed property becomes a `{ action: "bindUpdate", prop, value }` patch that updates matching `na-bind` and `name` attributes in the DOM.
 
 ## Scaffold Your Own Feature
 
 1. **Create markup.** Add a new `na-instance="Feature:some-id"` container with the binds and events you need. Use the [Template Attributes Reference](./attributes) as a checklist.
-2. **Add a handler.** Export an object with a `mount()` method plus one function per event name (e.g., `save`, `archive`). Return the next state from each event handler.【F:demo/README.md†L67-L186】【F:packages/nasc-server/index.js†L12-L121】
-3. **Register the handler.** Pass your handler into `attachNasc({ handlers })` or `createProcessor()` so the server knows how to process events.【F:packages/nasc-server/index.js†L12-L173】
+2. **Add a handler.** Export an object with a `mount()` method plus one function per event name (e.g., `save`, `archive`). Return the next state from each event handler.
+3. **Register the handler.** Pass your handler into `attachNasc({ handlers })` or `createProcessor()` so the server knows how to process events.
 4. **(Optional) Define schema.** Provide JSON Schema via `schemaProvider` to unlock validation overlays and typed hints. See [Schemas & Validation](./schemas).
 
 Restart the server or hot-reload as needed, then exercise the UI. Within seconds you can iterate on new features while the framework handles transports, state diffs, and DOM patching for you.
 
 ## Workspace Tips
 
-- Install shared runtime dependencies (like `express` or `ws`) at the repository root so the `packages/nasc-server` code can `require()` them.【F:README.md†L48-L55】
+- Install shared runtime dependencies (like `express` or `ws`) at the repository root so the `packages/nasc-server` code can `require()` them.
 - Use pnpm filters to avoid directory changes: `pnpm --filter nasc-demo start`.
-- Keep `nasc.js` served statically by mounting `attachNasc` or copying the file into your own build pipeline.【F:packages/nasc-server/index.js†L130-L167】
+- Keep `nasc.js` served statically by mounting `attachNasc` or copying the file into your own build pipeline.
 
 You are now ready to explore the deeper concepts that make Nasc tick.

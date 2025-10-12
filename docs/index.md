@@ -7,14 +7,14 @@ permalink: /
 
 # Nasc Documentation
 
-Nasc is a "live HTML" framework that keeps your markup simple while letting the server drive state and logic. It streams DOM updates from the backend to the browser over Server-Sent Events (SSE) by default and can transparently upgrade to WebSockets for bidirectional scenarios.【F:README.md†L1-L70】
+Nasc is a "live HTML" framework that keeps your markup simple while letting the server drive state and logic. It streams DOM updates from the backend to the browser over Server-Sent Events (SSE) by default and can transparently upgrade to WebSockets for bidirectional scenarios.
 
 ## Why Nasc?
 
-- **Minimal client footprint.** The browser loads a generic `nasc.js` client that knows how to bind data, patch the DOM, and validate schemas—nothing more.【F:README.md†L15-L37】【F:packages/nasc-client/nasc.js†L1-L205】
-- **Server-owned state.** Each HTML container declares an `na-instance="Type:id"`; the matching server handler performs all business logic and emits diffs that become DOM patches.【F:README.md†L56-L70】【F:packages/nasc-server/index.js†L12-L121】
-- **Transport flexibility.** SSE is the default, but you can opt into WebSockets per page or URL query parameter without rewriting templates.【F:README.md†L56-L66】【F:packages/nasc-client/nasc.js†L238-L320】
-- **Schema-aware safety.** JSON Schemas stream from the server during mount so the client can validate bindings, highlight mistakes, and help you catch regressions early.【F:packages/nasc-server/index.js†L26-L85】【F:packages/nasc-client/nasc.js†L13-L214】
+- **Minimal client footprint.** The browser loads a generic `nasc.js` client that knows how to bind data, patch the DOM, and validate schemas—nothing more.
+- **Server-owned state.** Each HTML container declares an `na-instance="Type:id"`; the matching server handler performs all business logic and emits diffs that become DOM patches.
+- **Transport flexibility.** SSE is the default, but you can opt into WebSockets per page or URL query parameter without rewriting templates.
+- **Schema-aware safety.** JSON Schemas stream from the server during mount so the client can validate bindings, highlight mistakes, and help you catch regressions early.
 
 ## Documentation Map
 
@@ -35,7 +35,7 @@ Nasc is a "live HTML" framework that keeps your markup simple while letting the 
 
 ## Project Structure Recap
 
-Nasc currently ships as a monorepo with a reusable client/server pair and a demo app that showcases end-to-end wiring.【F:README.md†L21-L38】
+Nasc currently ships as a monorepo with a reusable client/server pair and a demo app that showcases end-to-end wiring.
 
 ```
 packages/
@@ -45,7 +45,7 @@ packages/
 demo/              # Example application with handlers, schemas, and HTML
 ```
 
-Use pnpm from the repository root to install dependencies and run the demo app while you experiment with the code samples in this guide.【F:README.md†L39-L55】
+Use pnpm from the repository root to install dependencies and run the demo app while you experiment with the code samples in this guide.
 
 ## Next Steps
 
