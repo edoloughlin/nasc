@@ -4,12 +4,13 @@ title: Instance cache hygiene (LRU/TTL) + na-disconnect
 status: To Do
 assignee: []
 created_date: '2025-10-12 11:02'
-updated_date: '2025-10-12 11:07'
+updated_date: '2025-10-12 11:09'
 labels:
   - annoyances
   - backend
   - ops
   - performance
+  - 'epic:ops'
 dependencies: []
 priority: medium
 ---
