@@ -11,6 +11,7 @@ labels:
   - transport
   - frontend
   - 'epic:transports'
+  - 'epic:offline'
 dependencies: []
 ---
 
