@@ -6,7 +6,7 @@ title: >-
 status: In Progress
 assignee: []
 created_date: '2025-10-12 14:49'
-updated_date: '2025-10-12 15:21'
+updated_date: '2025-10-12 15:39'
 labels:
   - 'epic:dx'
 dependencies: []
@@ -22,14 +22,14 @@ For Typescript, there should be a cli tool that finds the interfaces or types pr
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Type extraction supports TS handler input/output types
-- [ ] #2 JSDoc @type/@param fallback supported when TS types unavailable
-- [ ] #3 Checker reports path-level diffs vs app.schema.json with clear messages
-- [ ] #4 Dev mode warns on mismatch; CI fails when STRICT_SCHEMA_TYPES=true
-- [ ] #5 Unit tests cover extractor and checker (positive/negative), coverage >= 85%
-- [ ] #6 Integration tests: mismatch blocks CI; match passes with zero warnings
+- [x] #1 Type extraction supports TS handler input/output types
+- [x] #2 JSDoc @type/@param fallback supported when TS types unavailable
+- [x] #3 Checker reports path-level diffs vs app.schema.json with clear messages
+- [x] #4 Dev mode warns on mismatch; CI fails when STRICT_SCHEMA_TYPES=true
+- [x] #5 Unit tests cover extractor and checker (positive/negative), coverage >= 85%
+- [x] #6 Integration tests: mismatch blocks CI; match passes with zero warnings
 - [ ] #7 Caching prevents stale results; incremental rebuild reflects file changes
-- [ ] #8 Documentation added for usage, flags, and examples
+- [x] #8 Documentation added for usage, flags, and examples
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -44,3 +44,14 @@ For Typescript, there should be a cli tool that finds the interfaces or types pr
 7. Performance: cache generated schemas; incremental rebuild on file changes.
 8. Docs: usage, flags, examples (TS and JSDoc).
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+- Added schema/type checker CLI (packages/nasc-server/bin/nasc-schema-check)
+- Implemented TS extractor + JSDoc typedef fallback and path-level diffing
+- Dev warnings on mount for schema/state drift; STRICT_SCHEMA_TYPES to fail CI
+- Tests added: extractor/checker positive+negative, strict mode behavior
+- Docs updated: schemas.md with usage, flags, examples
+- Remaining: caching + incremental rebuild (AC #7)
+<!-- SECTION:NOTES:END -->
