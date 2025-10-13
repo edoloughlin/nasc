@@ -14,11 +14,11 @@ This catalogue mirrors the thorough attribute listings in the htmx docs. Each en
 | --- | --- |
 | Scope | `<body>` element |
 | Purpose | Auto-start the Nasc client when the DOM becomes ready. |
-| Client behavior | Calls `connect({})` exactly once, issues `mount` events for every `na-instance`, and begins streaming patches. |
+| Client behavior | Calls `connect({})` exactly once, issues `mount` events for every `na-scope`, and begins streaming patches. |
 
 Use this in static HTML pages to eliminate manual JavaScript bootstrapping. Remove it if you want to delay connection until your own script calls `connect()` (for partial hydration or testing).
 
-## `na-instance="Type:id"`
+## `na-scope="path"` + `na-type="Type"`
 
 | Property | Details |
 | --- | --- |
@@ -27,6 +27,44 @@ Use this in static HTML pages to eliminate manual JavaScript bootstrapping. Remo
 | Client behavior | Sends `mount` once on connect, includes the ID in the payload for every event, and routes incoming patches only to nodes within the container. |
 
 The type selects the handler object (`handlers['User']`), and the ID flows through to `mount()` as `userId`. Keep IDs stable so reconnects and SSR hydration work seamlessly.
+
+### Absolute `$` scopes and nested paths
+
+You can scope a container to an absolute app path by prefixing `na-scope` with `$`. Within a `$...` scope, relative binds and list paths resolve from that base; you can still opt into fully absolute binds inside the container by prefixing the bind expression with `$`.
+
+Examples:
+
+```html
+<div na-scope="$user" na-type="App">
+  <!-- Resolves to $user.name -->
+  <span na-bind="name"></span>
+
+  <!-- Resolves to $user.todos -->
+  <ul>
+    <template na-each="todos" na-key="id" na-type="TodoItem">
+      <li><span na-bind="label"></span></li>
+    </template>
+  </ul>
+
+  <!-- Fully absolute inside a $ scope: resolves to $settings.theme -->
+  <span na-bind="$settings.theme"></span>
+</div>
+```
+
+Events originating inside a `$` scope route to a concrete instance ID so the server can process them consistently. By default, the client maps any `$...` scope to `instance = "root"`. You can customize this mapping in the browser:
+
+```html
+<script>
+  window.NASC_OPTIONS = {
+    // Map an absolute scope path (e.g., "$user") to a concrete instance id
+    mapScopeToInstance(path, type, container) {
+      return 'App:root';
+    }
+  };
+<\/script>
+```
+
+Validation continues to work with `$` and dotted paths. The overlay validates the top‑level property (e.g., `$user.name` validates `User.name`). For lists, keep using `na-type` on `<template>` or rely on `$ref` inference from the parent array’s schema.
 
 ## `na-bind="prop"`
 
@@ -56,7 +94,7 @@ Pair `na-each="items"` with `na-key="id"` and optionally `na-type="Todo"` for sc
 | Purpose | Send form data to a server handler without page reload. |
 | Client behavior | Prevents default submission, serializes `FormData(form)` into an object, and posts `{ event, instance, payload }` through the active transport. |
 
-Pair this with standard `<button type="submit">` controls. Input names become payload keys. Keep the form inside the correct `na-instance` so the payload routes to the right handler.
+Pair this with standard `<button type="submit">` controls. Input names become payload keys. Keep the form inside the correct `na-scope` so the payload routes to the right handler.
 
 ## `na-click="eventName"`
 
@@ -88,7 +126,7 @@ A minimal instance often looks like this:
 
 ```html
 <body na-connect>
-  <div na-instance="TodoList:my-list">
+  <div na-scope="my-list" na-type="TodoList">
     <form na-submit="add_todo">
       <input name="title" placeholder="What needs to be done?" />
       <button>Add</button>

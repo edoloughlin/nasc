@@ -34,7 +34,7 @@ SSE is the default transport. Append `?transport=ws` to try WebSockets or `?tran
 
 ## Understand the HTML ↔ Handler Contract
 
-Every interactive region is wrapped in `na-instance="Type:id"`. Inside that container:
+Every interactive region is wrapped in `na-scope="path"` and annotated with `na-type="Type"`. Inside that container:
 
 - `na-bind="prop"` displays state from the instance.
 - `na-submit="event"` on a form converts `FormData` into the event payload.
@@ -44,7 +44,7 @@ Every interactive region is wrapped in `na-instance="Type:id"`. Inside that cont
 Here is the profile section from the demo page:
 
 ```html
-<div class="card" na-instance="User:currentUser">
+<div class="card" na-scope="currentUser" na-type="User">
   <h2>Hello, <span na-bind="name">Guest</span></h2>
   <p>Email: <strong na-bind="email"></strong></p>
   <form class="form" na-submit="save_profile">
@@ -69,22 +69,22 @@ The server routes that payload to `handlers['User'].save_profile` and diffs the 
 
 ## Scaffold Your Own Feature
 
-1. **Create markup.** Add a new `na-instance="Feature:some-id"` container with the binds and events you need. Use the [Template Attributes Reference]({{ '/attributes' | relative_url }}) as a checklist.
+1. **Create markup.** Add a new `na-scope="some-id" na-type="Feature"` container with the binds and events you need. Use the [Template Attributes Reference]({{ '/attributes' | relative_url }}) as a checklist.
 2. **Add a handler.** Export an object with a `mount()` method plus one function per event name (e.g., `save`, `archive`). Return the next state from each event handler. Following the convention in the demo, you would create a `handlers/feaure.ts` file and export a `Feature` object.
 3. **Register the handler.** Pass your handler into `attachNasc({ handlers })` or `createProcessor()` so the server knows how to process events.
 4. **(Optional) Define schema.** Provide JSON Schema via `schemaProvider` to unlock validation overlays and typed hints. Following the demo convention, you would add a `Feature` property to the `$defs` object in `schemas/app.schema.json`. See [Schemas & Validation]({{ '/schemas' | relative_url }}).
 
 Demo convention: instance → schema → handler
 
-- `na-instance="Feature:some-id"`: The left side (`Feature`) is the feature type; the right side (`some-id`) is the instance key.
-- `schemas/app.schema.json`: The demo defines reusable types under `"$defs"` (e.g., `"$defs".Feature`). The left side of `na-instance` (`Feature`) maps to that type definition; the right side (`some-id`) is an instance identifier used at runtime (seeded by `mount`, a store, or fixtures), not enumerated in the schema.
+- `na-scope="some-id"` + `na-type="Feature"`: The `na-type` is the feature type; `some-id` is the instance key.
+- `schemas/app.schema.json`: The demo defines reusable types under `"$defs"` (e.g., `"$defs".Feature`). The `na-type` maps to that type definition; the `na-scope` value (`some-id`) is an instance identifier used at runtime (seeded by `mount`, a store, or fixtures), not enumerated in the schema.
 - `schemas/app.mapping.json` (optional): Maps feature types to backing stores/entities (e.g., table name and primary key). This influences where `some-id` is looked up, not the JSON Schema shape.
 - `handlers/feature.ts`: By convention, the feature type name maps to a TypeScript file of the same name that exports a `Feature` interface for state shape and a default handler implementation for events.
 
 Example HTML
 
 ```html
-<section class="card" na-instance="Feature:some-id">
+<section class="card" na-scope="some-id" na-type="Feature">
   <h3><span na-bind="title">Untitled</span></h3>
   <button class="btn" na-click="archive">Archive</button>
   <form na-submit="rename">
@@ -155,7 +155,7 @@ const Feature = {
 export default Feature;
 ```
 
-With this convention, the `Feature` part of `na-instance` links to `handlers/feature.ts` (for behavior) and to `"$defs".Feature` in `schemas/app.schema.json` (for shape/validation). The `some-id` portion is the instance identifier used by your handler’s `mount`, in-memory state, or backing store (optionally guided by `schemas/app.mapping.json`). The runtime does not require TypeScript, but exporting a `Feature` interface helps keep handlers and templates in sync.
+With this convention, `na-type="Feature"` links to `handlers/feature.ts` (for behavior) and to `"$defs".Feature` in `schemas/app.schema.json` (for shape/validation). The `some-id` portion (from `na-scope`) is the instance identifier used by your handler’s `mount`, in-memory state, or backing store (optionally guided by `schemas/app.mapping.json`). The runtime does not require TypeScript, but exporting a `Feature` interface helps keep handlers and templates in sync.
 
 Restart the server or hot-reload as needed, then exercise the UI. Within seconds you can iterate on new features while the framework handles transports, state diffs, and DOM patching for you.
 

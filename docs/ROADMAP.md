@@ -5,7 +5,7 @@ This roadmap highlights upcoming work related to transports, reliability, and DX
 ## Transport
 
 - Per‑instance transport selection (Deferred)
-  - Add `na-transport="ws|sse|inherit"` on `na-instance` containers.
+  - Add `na-transport="ws|sse|inherit"` on `na-scope` containers.
   - Client: resolve requested transports, coerce all bindings of the same instance to one transport; warn on conflicts.
   - Server: maintain `clientId -> instance -> transport` map and route patches to exactly one channel; never double‑send.
   - WS identity: include `clientId` in WS URL (e.g., `wss://…?clientId=…`).

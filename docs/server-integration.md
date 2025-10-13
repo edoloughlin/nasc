@@ -32,7 +32,7 @@ server.listen(3000);
 2. **Ensure dependencies.** Lazily `require('express')` and throw a helpful message if it is missing so workspace installations stay consistent.
 3. **Serve assets.** Mounts JSON body parsing, serves `nasc.js`, and optionally serves a static root directory for SSR’d HTML pages.
 4. **Expose transports.** Registers `/nasc/stream` and `/nasc/event` for SSE (plus legacy aliases) and optionally spins up WebSockets if the `ws` dependency is available.
-5. **SSR middleware.** If you pass `ssr.rootDir`, Nasc parses your HTML, calls `mount()` for each instance, and injects initial values before sending the response.
+5. **SSR middleware.** If you pass `ssr.rootDir`, Nasc parses your HTML, calls `mount()` for each instance, and injects initial values before sending the response. Absolute `$` scopes are resolved to a concrete instance ID (default `root`, configurable) and child binds are filled relative to that base path.
 6. **Observability.** Publishes `/nasc/manifest` so you can inspect handlers at runtime and logs the mapping during startup.
 
 ## Custom Stores
@@ -60,11 +60,28 @@ The processor is transport-agnostic: send it messages, forward the resulting pat
 
 The SSR middleware inspects HTML responses before sending them to the browser:
 
-1. Parse each `na-instance` attribute.
-2. Call `mount()` to fetch initial state.
-3. Replace matching `na-bind` inner text and `<input name>` values with the returned data.
+1. Parse each `na-scope` attribute. For absolute `$` scopes (e.g., `na-scope="$user"`), map the scope to a concrete instance id used by the handler (default `root`).
+2. Call `mount()` to fetch initial state for that instance; if the scope is absolute, use the `$...` path as the base when filling child binds.
+3. Replace matching `na-bind` inner text (supports `$` and dotted paths) and `<input name>` values with the returned data.
 
 This primes the DOM so the page renders meaningful content before the client connects, enabling progressive enhancement.
+
+### Mapping absolute `$` scopes on the server
+
+Customize how `$...` scopes map to concrete instance IDs by passing `mapScopeToInstance` to `attachNasc`:
+
+```js
+attachNasc({
+  app,
+  server,
+  handlers,
+  ssr: { rootDir: __dirname },
+  // Optional: infer a type from the scope id
+  mapScopeToType(id) { return 'App'; },
+  // Map "$..." scopes to a concrete instance id used by handlers
+  mapScopeToInstance(path, type) { return 'root'; },
+});
+```
 
 ## Handler Manifest Endpoint
 

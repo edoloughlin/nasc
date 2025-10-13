@@ -16,6 +16,6 @@
 - `createSseTransport` contains fallback logic that mutates the transport object at runtime. Isolating fallback swapping into a helper (e.g., `fallbackToWebSocket(this, inferWsUrl(), onOpenCb, onPatchesCb)`) could make control flow more explicit.
 
 ## Additional Suggestions
-- Cache selectors: repeated `document.querySelector` calls for `[na-instance="${p.instance}"]` might benefit from memoization or storing container references in a Map keyed by instance ID.
+- Cache selectors: repeated `document.querySelector` calls for `[na-scope="${p.instance}"]` might benefit from memoization or storing container references in a Map keyed by instance ID.
 - Consider guarding event listeners to avoid duplicate registration when `connect` is called multiple times.
 - Wrap DOM traversal logic in try/catch sparingly; broad catches can hide actionable errors. Narrow the scope or at least log suppressed exceptions for debugging.

@@ -29,8 +29,9 @@ function createProcessor(handlers, store, options = {}) {
   }
   return async function processMessage(message) {
     try {
-      const { event, instance, payload } = message;
-      const [type, id] = (instance || "").split(":");
+      const { event, instance, payload, type: msgType } = message;
+      const type = msgType;
+      const id = instance || "";
       const handler = handlers[type];
       if (!handler) {
         return [{ action: "error", message: `Unknown handler for type '${type}'` }];
@@ -74,6 +75,7 @@ function createProcessor(handlers, store, options = {}) {
         initialPatches.push(...Object.entries(current).map(([prop, value]) => ({
           action: "bindUpdate",
           instance,
+          type,
           prop,
           value,
         })));
@@ -99,6 +101,7 @@ function createProcessor(handlers, store, options = {}) {
           ...Object.entries(current).map(([prop, value]) => ({
             action: "bindUpdate",
             instance,
+            type,
             prop,
             value,
           }))
@@ -115,6 +118,7 @@ function createProcessor(handlers, store, options = {}) {
       const patches = Object.entries(diff).map(([prop, value]) => ({
         action: "bindUpdate",
         instance,
+        type,
         prop,
         value,
       }));
@@ -253,8 +257,8 @@ function attachNasc(options = {}) {
   }
   async function eventPostHandler(req, res) {
     try {
-      const { clientId, event, instance, payload, eventId } = req.body || {};
-      const patches = await processMessage({ event, instance, payload });
+      const { clientId, event, instance, payload, eventId, type } = req.body || {};
+      const patches = await processMessage({ event, instance, payload, type });
       if (clientId && patches && patches.length) sendSse(clientId, patches, eventId);
       res.status(202).json({ ok: true });
     } catch (e) {
@@ -291,7 +295,7 @@ function attachNasc(options = {}) {
 
   // SSR middleware
   if (options.ssr) {
-    const ssr = createSsrMiddleware({ handlers, rootDir });
+    const ssr = createSsrMiddleware({ handlers, rootDir, mapScopeToType: options.mapScopeToType, mapScopeToInstance: options.mapScopeToInstance });
     app.get("/", ssr);
     app.get("/*.html", ssr);
   }
@@ -300,21 +304,39 @@ function attachNasc(options = {}) {
 }
 
 // SSR middleware creator: fills [na-bind] and input[name] from handler.mount()
-function createSsrMiddleware({ handlers, rootDir }) {
+function createSsrMiddleware({ handlers, rootDir, mapScopeToType, mapScopeToInstance }) {
   return async function handleSSR(req, res, next) {
     const page = req.path === "/" ? "/app.html" : req.path;
     try {
       const htmlPath = rootDir ? path.join(rootDir, page) : path.join(process.cwd(), page);
       let html = await fs.readFile(htmlPath, "utf-8");
-      const instanceMatches = html.matchAll(/na-instance=\"([^\"]+)\"/g);
-      for (const match of instanceMatches) {
-        const instance = match[1];
-        const [type, id] = instance.split(":");
-        const handler = handlers[type];
+      const tagMatches = html.matchAll(/<([a-zA-Z0-9:-]+)([^>]*?)\sna-scope=\"([^\"]+)\"([^>]*)>/g);
+      for (const match of tagMatches) {
+        const before = match[2] || "";
+        const after = match[4] || "";
+        const attrs = `${before} ${after}`;
+        const typeMatch = attrs.match(/\bna-type=\"([^\"]+)\"/);
+        let type = typeMatch && typeMatch[1];
+        const id = match[3];
+        if (!type && typeof mapScopeToType === 'function') {
+          try { const mapped = mapScopeToType(id); if (typeof mapped === 'string' && mapped) type = mapped; } catch {}
+        }
+        const handler = type && handlers[type];
         if (!handler || typeof handler.mount !== "function") continue;
-        const mountParams = { [`${type.toLowerCase()}Id`]: id };
+        // Map $ scopes to a concrete instance id
+        let effectiveId = id;
+        let baseSegments = [];
+        if (id && id[0] === '$') {
+          try {
+            const mapped = typeof mapScopeToInstance === 'function' ? mapScopeToInstance(id, type) : null;
+            effectiveId = (typeof mapped === 'string' && mapped) ? mapped : 'root';
+          } catch { effectiveId = 'root'; }
+          baseSegments = id.slice(1).split('.').map(s => s.trim()).filter(Boolean);
+        }
+        const mountParams = { [`${type.toLowerCase()}Id`]: effectiveId };
         const initialState = await handler.mount(mountParams);
-        for (const [prop, value] of Object.entries(initialState)) {
+        const baseState = (function pathGet(obj, segs){ try { let cur = obj; for (const s of segs){ if (cur==null||typeof cur!=='object') return {}; cur = cur[s]; } return (cur && typeof cur==='object') ? cur : {}; } catch { return {}; } })(initialState, baseSegments);
+        for (const [prop, value] of Object.entries(baseState)) {
           const bindRegex = new RegExp(`(<[^>]+na-bind=\"${prop}\"[^>]*>)[^<]*(</[^>]+>)`, "g");
           html = html.replace(bindRegex, `$1${String(value)}$2`);
           const inputRegex = new RegExp(`(<input[^>]*name=\"${prop}\"[^>]*)(/?>)`, "gi");

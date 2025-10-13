@@ -18,7 +18,7 @@
 
       <div class="grid">
         <!-- User card -->
-        <div class="card" na-instance="User:currentUser">
+        <div class="card" na-scope="currentUser" na-type="User">
           <div class="scope">Scope <code>User:currentUser</code></div>
           <h2>Hello, <span na-bind="name">Guest</span> 👋</h2>
           <p class="muted">Email on file: <strong na-bind="email"></strong></p>
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Todo card -->
-        <div class="card" na-instance="TodoList:my-list">
+        <div class="card" na-scope="my-list" na-type="TodoList">
           <div class="scope">Scope <code>TodoList:my-list</code></div>
 
           <form class="todo-header" na-submit="add_todo">

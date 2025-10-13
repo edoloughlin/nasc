@@ -88,7 +88,7 @@ const store = new SqliteMappedStore(process.env.DB_PATH!, {
 ```
 
 Runtime data flow:
-- `na-instance="Type:id"` → the `Type` selects the mapping and schema type; the `id` value is the row key in the main table (`pk`).
+- `na-scope="path"` + `na-type="Type"` → the `Type` selects the mapping and schema type; the `path` value is used as the instance id (`pk`).
 - Your handler returns the full state; the processor computes diffs and calls `store.persist(Type, id, diff, full)`; the mapped store applies an upsert to the main table and fully replaces child rows for array relations.
 
 ## Testing Tips
