@@ -12,7 +12,7 @@ Nasc is a "live HTML" framework that keeps your markup simple while letting the 
 ## Why Nasc?
 
 - **Minimal client footprint.** The browser loads a generic `nasc.js` client that knows how to bind data, patch the DOM, and validate schemas—nothing more.
-- **Server-owned state.** Each HTML container declares an `na-scope="Type:id"`; the matching server handler performs all business logic and emits diffs that become DOM patches.
+- **Server-owned state.** Each HTML container declares `na-scope="path"` and `na-type="Type"`; the matching server handler performs all business logic and emits diffs that become DOM patches.
 - **Transport flexibility.** SSE is the default, but you can opt into WebSockets per page or URL query parameter without rewriting templates.
 - **Schema-aware safety.** JSON Schemas stream from the server during mount so the client can validate bindings, highlight mistakes, and help you catch regressions early.
 

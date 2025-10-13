@@ -36,7 +36,7 @@
 
 **5) Implicit instance scoping**
 
-* **Annoyance:** `na-scope="User:currentUser"` + `na-bind="name"` is clean, but nested scopes can be confusing; devs may not realize which instance a bind resolves to.
+* **Annoyance:** `na-scope="currentUser"` + `na-type="User"` + `na-bind="name"` is clean, but nested scopes can be confusing; devs may not realize which instance a bind resolves to.
 * **Fix:**
 
   * Add `na-scope-inspector` (hover to see the resolved instance/type for any node).

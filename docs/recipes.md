@@ -12,12 +12,12 @@ Borrowing the pattern-driven style of the htmx docs, this section collects commo
 
 Goal: Update profile details and surface schema errors.
 
-1. **HTML** – Wrap the form in `na-scope="User:currentUser"`, bind fields with `na-bind`, and keep input `name` attributes aligned.
+1. **HTML** – Wrap the form in `na-scope="currentUser"` and `na-type="User"`, bind fields with `na-bind`, and keep input `name` attributes aligned.
 2. **Handler** – Implement `mount()` to load the user and `save_profile(payload)` to return the updated object.
 3. **Validation** – Define the `User` schema with required properties so the overlay flags missing binds immediately.
 
 ```html
-<div na-scope="User:currentUser">
+<div na-scope="currentUser" na-type="User">
   <h2>Hello, <span na-bind="name">Guest</span></h2>
   <form na-submit="save_profile">
     <input name="name" placeholder="Your name" />

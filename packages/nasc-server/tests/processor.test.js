@@ -40,17 +40,17 @@ describe('createProcessor', () => {
       schemaProvider: { Counter: baseSchema, Todo: todoSchema },
     });
 
-    const patches = await processMessage({ event: 'mount', instance: 'Counter:abc' });
+    const patches = await processMessage({ event: 'mount', instance: 'abc', type: 'Counter' });
 
     assert.deepStrictEqual(mountCalls, [{ counterId: 'abc' }]);
     assert.deepStrictEqual(store.getPersistCalls(), [
       { type: 'Counter', id: 'abc', diff: { count: 1, todos: [] }, full: { count: 1, todos: [] } },
     ]);
     assert.deepStrictEqual(patches, [
-      { action: 'schema', instance: 'Counter:abc', type: 'Counter', schema: baseSchema },
-      { action: 'schema', instance: 'Counter:abc', type: 'Todo', schema: todoSchema },
-      { action: 'bindUpdate', instance: 'Counter:abc', prop: 'count', value: 1 },
-      { action: 'bindUpdate', instance: 'Counter:abc', prop: 'todos', value: [] },
+      { action: 'schema', instance: 'abc', type: 'Counter', schema: baseSchema },
+      { action: 'schema', instance: 'abc', type: 'Todo', schema: todoSchema },
+      { action: 'bindUpdate', instance: 'abc', type: 'Counter', prop: 'count', value: 1 },
+      { action: 'bindUpdate', instance: 'abc', type: 'Counter', prop: 'todos', value: [] },
     ]);
   });
 
@@ -70,12 +70,12 @@ describe('createProcessor', () => {
       schemaProvider: { Counter: baseSchema },
     });
 
-    const patches = await processMessage({ event: 'mount', instance: 'Counter:abc' });
+    const patches = await processMessage({ event: 'mount', instance: 'abc', type: 'Counter' });
 
     assert.strictEqual(mountInvoked, false);
     assert.deepStrictEqual(patches, [
-      { action: 'schema', instance: 'Counter:abc', type: 'Counter', schema: baseSchema },
-      { action: 'bindUpdate', instance: 'Counter:abc', prop: 'count', value: 5 },
+      { action: 'schema', instance: 'abc', type: 'Counter', schema: baseSchema },
+      { action: 'bindUpdate', instance: 'abc', type: 'Counter', prop: 'count', value: 5 },
     ]);
   });
 
@@ -92,7 +92,8 @@ describe('createProcessor', () => {
 
     const patches = await processMessage({
       event: 'increment',
-      instance: 'Counter:abc',
+      instance: 'abc',
+      type: 'Counter',
       payload: { delta: 2 },
     });
 
@@ -100,7 +101,7 @@ describe('createProcessor', () => {
       { type: 'Counter', id: 'abc', diff: { count: 3 }, full: { count: 3 } },
     ]);
     assert.deepStrictEqual(patches, [
-      { action: 'bindUpdate', instance: 'Counter:abc', prop: 'count', value: 3 },
+      { action: 'bindUpdate', instance: 'abc', type: 'Counter', prop: 'count', value: 3 },
     ]);
   });
 
@@ -108,7 +109,7 @@ describe('createProcessor', () => {
     const store = createStore();
     const processMessage = createProcessor({}, store);
 
-    const patches = await processMessage({ event: 'mount', instance: 'Missing:1' });
+    const patches = await processMessage({ event: 'mount', instance: '1', type: 'Missing' });
 
     assert.deepStrictEqual(patches, [
       { action: 'error', message: "Unknown handler for type 'Missing'" },
@@ -126,7 +127,7 @@ describe('createProcessor', () => {
     const store = createStore();
     const processMessage = createProcessor(handlers, store);
 
-    const patches = await processMessage({ event: 'mount', instance: 'Counter:oops' });
+    const patches = await processMessage({ event: 'mount', instance: 'oops', type: 'Counter' });
 
     assert.deepStrictEqual(patches, [
       { action: 'error', message: 'boom' },

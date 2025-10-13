@@ -14,17 +14,125 @@ export function connect(arg) {
   // Track bindings we've already validated (type.prop)
   const validatedOnce = new Set();
 
+  function resolveType(container, instance) {
+    try {
+      const t = container.getAttribute('na-type');
+      if (t) return t;
+      const mapHook = (window && window.NASC_OPTIONS && typeof window.NASC_OPTIONS.mapScopeToType === 'function')
+        ? window.NASC_OPTIONS.mapScopeToType
+        : null;
+      if (mapHook) {
+        const mapped = mapHook(instance, container);
+        if (typeof mapped === 'string' && mapped) return mapped;
+      }
+    } catch {}
+    return '';
+  }
+
+  function resolveEffectiveInstance(instance, type, container) {
+    try {
+      if (instance && instance[0] === '$') {
+        const mapHook = (window && window.NASC_OPTIONS && typeof window.NASC_OPTIONS.mapScopeToInstance === 'function')
+          ? window.NASC_OPTIONS.mapScopeToInstance
+          : null;
+        if (mapHook) {
+          const mapped = mapHook(instance, type, container);
+          if (typeof mapped === 'string' && mapped) return mapped;
+        }
+        return 'root';
+      }
+    } catch {}
+    return instance || '';
+  }
+
+  function getBasePathSegments(container) {
+    try {
+      const scope = container.getAttribute('na-scope') || '';
+      if (scope && scope[0] === '$') {
+        const segs = scope.slice(1).split('.').map(s => s.trim()).filter(Boolean);
+        return segs;
+      }
+    } catch {}
+    return [];
+  }
+
+  function parsePathExpression(expr, container) {
+    let absolute = false;
+    let path = expr || '';
+    const idx = path.indexOf(':');
+    if (idx >= 0) path = path.slice(idx + 1);
+    if (path.startsWith('$')) { absolute = true; path = path.slice(1); }
+    const segs = path.split('.').map(s => s.trim()).filter(Boolean);
+    const base = absolute ? [] : getBasePathSegments(container);
+    return { absolute, segments: base.concat(segs) };
+  }
+
+  function pathGet(root, segments) {
+    try {
+      let cur = root;
+      for (const s of segments) {
+        if (cur == null) return undefined;
+        if (typeof cur !== 'object') return undefined;
+        cur = cur[s];
+      }
+      return cur;
+    } catch { return undefined; }
+  }
+
+  function isInteractiveScope(container) {
+    try {
+      if (container.querySelector('[na-submit]')) return true;
+      if (container.querySelector('[na-click]')) return true;
+      if (container.querySelector('template[na-each]')) return true;
+      // Relative binds (not starting with $)
+      const relBind = container.querySelector('[na-bind]');
+      if (relBind) {
+        const val = relBind.getAttribute('na-bind') || '';
+        if (val && !val.startsWith('$')) return true;
+      }
+    } catch {}
+    return false;
+  }
+
   function onOpen() {
     console.log("[nasc] connected");
     // If SSR has already rendered content, don't re-mount
+    const mountSent = new Set();
+    const byScope = new Map(); // scope -> { types:Set<string>, entries:[{el,type}] }
     document.querySelectorAll("[na-scope]").forEach(container => {
-      const instance = container.getAttribute("na-scope");
-      const [type, id] = instance.split(":");
-      transport.send({
-        event: "mount",
-        instance,
-        payload: { [`${type.toLowerCase()}Id`]: id }
-      });
+      const rawInstance = container.getAttribute("na-scope") || '';
+      const type = resolveType(container, rawInstance);
+      const instance = resolveEffectiveInstance(rawInstance, type, container);
+      try { container.setAttribute('data-na-instance', instance); } catch {}
+      // Track for conflict detection
+      const rec = byScope.get(instance) || { types: new Set(), entries: [] };
+      if (type) rec.types.add(type);
+      rec.entries.push({ el: container, type });
+      byScope.set(instance, rec);
+
+      // Missing type handling
+      if (!type) {
+        if (isInteractiveScope(container)) {
+          reportValidationError(`[nasc] Missing na-type for interactive scope '${instance}'`, container);
+          return;
+        } else {
+          warnOnce(`[nasc] Missing na-type for display-only scope '${instance}'`);
+          return;
+        }
+      }
+      const key = `${instance}::${type}`;
+      if (mountSent.has(key)) return;
+      mountSent.add(key);
+      transport.send({ event: "mount", instance, type, payload: {} });
+    });
+    // Conflict detection: same scope with multiple types
+    byScope.forEach((rec, scope) => {
+      const types = Array.from(rec.types);
+      if (types.length > 1) {
+        rec.entries.forEach(({ el, type }) => {
+          reportValidationError(`[nasc] Conflicting na-scope/na-type for '${scope}': ${types.join(', ')}`, el);
+        });
+      }
     });
   }
 
@@ -46,57 +154,74 @@ export function connect(arg) {
       }
       if (p.action === "bindUpdate") {
         // Validate binding once per type.property using cached schema
-        const [type] = String(p.instance || "").split(":");
-        const schema = schemaByType.get(type);
-        const key = `${type}.${p.prop}`;
+        const type = String(p.type || "");
+        const schema = type ? schemaByType.get(type) : undefined;
+        const key = type ? `${type}.${p.prop}` : `${p.prop}`;
         if (schema && !validatedOnce.has(key)) {
           if (!validateBinding(schema, p.prop, p.value)) {
-            const containerEl = document.querySelector(`[na-scope="${p.instance}"]`);
-            const typedSel = `[na-bind="${type}:${p.prop}"]`;
+            const containerEl = document.querySelector(`[data-na-instance="${p.instance}"]`) || document.querySelector(`[na-scope="${p.instance}"]`);
+            const typedSel = type ? `[na-bind="${type}:${p.prop}"]` : '';
             const el = containerEl && (containerEl.querySelector(`[na-bind="${p.prop}"]`) || containerEl.querySelector(typedSel) || containerEl.querySelector(`[name="${p.prop}"]`));
             reportValidationError(`Schema mismatch for ${type}.${p.prop}`, el || containerEl || null);
           }
           validatedOnce.add(key);
         }
-        const instanceSel = `[na-scope="${p.instance}"]`;
-        const container = document.querySelector(instanceSel);
-        if (!container) continue;
-
-        // Handle array updates for templates (na-each)
-        if (Array.isArray(p.value)) {
-          const templateEl = container.querySelector(`template[na-each="${p.prop}"]`);
-          const listRoot = templateEl && templateEl.parentElement;
-          if (templateEl && listRoot) {
-            applyKeyedDiff(listRoot, p.value, templateEl);
-            continue;
-          }
+        let containers = document.querySelectorAll(`[data-na-instance="${p.instance}"]`);
+        if (!containers || !containers.length) {
+          containers = document.querySelectorAll(`[na-scope="${p.instance}"]`);
         }
+        if (!containers || !containers.length) continue;
 
-        // Update simple text/value bindings (support typed binds as well)
-        const [instType] = String(p.instance || "").split(":");
-        container
-          .querySelectorAll(`[na-bind="${p.prop}"], [na-bind="${instType}:${p.prop}"]`)
-          .forEach((el) => {
-            const tag = el.tagName.toLowerCase();
-            if (tag === "input") {
-              const type = el.getAttribute('type');
-              if (type && type.toLowerCase() === 'checkbox') {
-                el.checked = !!p.value;
-              } else {
-                el.value = p.value ?? "";
-              }
-            } else if (tag === "textarea" || tag === "select") {
-              el.value = p.value ?? "";
-            } else {
-              el.textContent = p.value ?? "";
+        containers.forEach((container) => {
+          const root = { [p.prop]: p.value };
+
+          // Handle arrays for all templates (supports relative and absolute paths)
+          container.querySelectorAll('template[na-each]').forEach((tmpl) => {
+            const expr = tmpl.getAttribute('na-each') || '';
+            const { segments } = parsePathExpression(expr, container);
+            if (!segments.length) return;
+            if (segments[0] !== p.prop) return;
+            const items = pathGet(root, segments);
+            if (Array.isArray(items)) {
+              const listRoot = tmpl.parentElement;
+              if (listRoot) applyKeyedDiff(listRoot, items, tmpl);
             }
           });
-        // Update inputs with matching name
-        container
-          .querySelectorAll(`[name="${p.prop}"]`)
-          .forEach((el) => {
-            if ("value" in el) el.value = p.value ?? "";
+
+          // Update simple text/value bindings (supports nested and absolute paths; supports Type:prop prefix)
+          container.querySelectorAll('[na-bind]').forEach((el) => {
+            const bindAttr = el.getAttribute('na-bind') || '';
+            const { segments } = parsePathExpression(bindAttr, container);
+            if (!segments.length) return;
+            if (segments[0] !== p.prop) return;
+            const val = pathGet(root, segments);
+            if (typeof val === 'undefined') return; // avoid clobbering templated item bindings
+            const tag = el.tagName.toLowerCase();
+            if (tag === 'input') {
+              const it = el.getAttribute('type');
+              if (it && it.toLowerCase() === 'checkbox') {
+                el.checked = !!val;
+              } else {
+                el.value = val ?? '';
+              }
+            } else if (tag === 'textarea' || tag === 'select') {
+              el.value = val ?? '';
+            } else {
+              el.textContent = val ?? '';
+            }
           });
+
+          // Update inputs with matching name (supports nested and absolute paths)
+          container.querySelectorAll('input[name], textarea[name], select[name]').forEach((el) => {
+            const name = el.getAttribute('name') || '';
+            const { segments } = parsePathExpression(name, container);
+            if (!segments.length) return;
+            if (segments[0] !== p.prop) return;
+            const val = pathGet(root, segments);
+            if (typeof val === 'undefined') return;
+            if ('value' in el) el.value = val ?? '';
+          });
+        });
       }
     }
   }
@@ -177,11 +302,18 @@ export function connect(arg) {
     if (!form.hasAttribute("na-submit")) return;
     e.preventDefault();
     const container = form.closest("[na-scope]");
-    const instance = container?.getAttribute("na-scope");
+    const rawInstance = container?.getAttribute("na-scope");
+    const type = container ? (resolveType(container, rawInstance) || undefined) : undefined;
+    const instance = container ? resolveEffectiveInstance(rawInstance || '', type || '', container) : undefined;
+    if (!type) {
+      reportValidationError(`[nasc] Missing na-type for event scope '${instance}'`, container || null);
+      return;
+    }
     const payload = Object.fromEntries(new FormData(form).entries());
     transport.send({
       event: form.getAttribute("na-submit"),
       instance,
+      type,
       payload
     });
   });
@@ -192,7 +324,13 @@ export function connect(arg) {
     if (!el) return;
     e.preventDefault();
     const container = el.closest("[na-scope]");
-    const instance = container?.getAttribute("na-scope");
+    const rawInstance = container?.getAttribute("na-scope");
+    const type = container ? (resolveType(container, rawInstance) || undefined) : undefined;
+    const instance = container ? resolveEffectiveInstance(rawInstance || '', type || '', container) : undefined;
+    if (!type) {
+      reportValidationError(`[nasc] Missing na-type for event scope '${instance}'`, container || null);
+      return;
+    }
     const payload = {};
     for (const { name, value } of el.attributes) {
       if (name.startsWith("data-")) payload[name.slice(5)] = value;
@@ -200,6 +338,7 @@ export function connect(arg) {
     transport.send({
       event: el.getAttribute("na-click"),
       instance,
+      type,
       payload
     });
   });
@@ -369,7 +508,9 @@ function validateDeclaredBindings(instance, type) {
     const explicitType = el.getAttribute('na-type');
     const colonIdx = bindAttr.indexOf(':');
     const typed = colonIdx >= 0 ? { t: bindAttr.slice(0, colonIdx), p: bindAttr.slice(colonIdx + 1) } : null;
-    const prop = typed ? typed.p : bindAttr;
+    let propExpr = typed ? typed.p : bindAttr;
+    if (propExpr.startsWith('$')) propExpr = propExpr.slice(1);
+    const prop = (propExpr.split('.')[0] || '').trim();
     let targetType = explicitType || (typed && typed.t) || type;
     // If inside a template with na-type, prefer that as targetType
     const tmpl = el.closest('template[na-each]');
@@ -393,7 +534,7 @@ function validateDeclaredBindings(instance, type) {
     }
     const targetSchema = (window.__NASC_SCHEMAS && window.__NASC_SCHEMAS[targetType]) || null;
     const targetProps = (targetSchema && targetSchema.properties) || {};
-    if (!Object.prototype.hasOwnProperty.call(targetProps, prop)) {
+    if (!prop || !Object.prototype.hasOwnProperty.call(targetProps, prop)) {
       reportValidationError(`Unknown binding ${targetType}.${prop}`, el);
     }
   });
@@ -402,6 +543,7 @@ function validateDeclaredBindings(instance, type) {
   container.querySelectorAll('input[name], textarea[name], select[name]').forEach((el) => {
     const prop = el.getAttribute('name');
     if (!prop) return;
+    const topProp = (prop[0] === '$' ? prop.slice(1) : prop).split('.')[0];
     const explicitType = el.getAttribute('na-type');
     let targetType = explicitType || type;
     const tmpl = el.closest('template[na-each]');
@@ -423,7 +565,7 @@ function validateDeclaredBindings(instance, type) {
     }
     const targetSchema = (window.__NASC_SCHEMAS && window.__NASC_SCHEMAS[targetType]) || null;
     const targetProps = (targetSchema && targetSchema.properties) || {};
-    if (!Object.prototype.hasOwnProperty.call(targetProps, prop)) {
+    if (!Object.prototype.hasOwnProperty.call(targetProps, topProp)) {
       // Heuristic: if this is a top-level input (not in a template) and the prop
       // exists on a child item type used by a template in this container, treat it as
       // an event-only field (e.g., add_todo.title) and do not flag an error.
@@ -448,7 +590,7 @@ function validateDeclaredBindings(instance, type) {
           }
         }
       }
-      reportValidationError(`Unknown field ${targetType}.${prop}`, el);
+      reportValidationError(`Unknown field ${targetType}.${topProp}`, el);
     }
   });
 }
@@ -461,7 +603,7 @@ function scheduleTypeValidation(type) {
     try {
       const schema = (window.__NASC_SCHEMAS && window.__NASC_SCHEMAS[type]) || null;
       if (!schema || !schema.properties) return;
-      const containers = document.querySelectorAll(`[na-scope^="${type}:"]`);
+      const containers = document.querySelectorAll(`[na-scope][na-type="${type}"]`);
       containers.forEach((el) => {
         const inst = el.getAttribute('na-scope');
         if (inst) validateDeclaredBindings(inst, type);

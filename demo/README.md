@@ -48,7 +48,7 @@ Workspace tips
 ## How It Works (end-to-end)
 
 1) HTML with na-attributes
-- Scope: `na-scope="Type:id"` wraps a region bound to a single instance.
+- Scope: `na-scope="path"` (with `na-type="Type"`) wraps a region bound to a single instance.
 - Send events: `na-submit="event"` on forms, `na-click="event"` on buttons/inputs (with `data-*` as payload).
 - Bind data:
   - `na-bind="prop"` binds text/value within the scoped instance
@@ -92,7 +92,7 @@ HTML (from `app.html`):
 
 ```html
 <!-- Scope everything below to the User:currentUser instance -->
-<div class="card" na-scope="User:currentUser">
+<div class="card" na-scope="currentUser" na-type="User">
   <h2>Hello, <span na-bind="name">Guest</span></h2>
   <p>Email: <strong na-bind="email"></strong></p>
 
@@ -131,7 +131,7 @@ The returned next state is diffed against `currentState`, and for each changed p
 List items (from `app.html`):
 
 ```html
-<div class="card" na-scope="TodoList:my-list">
+<div class="card" na-scope="my-list" na-type="TodoList">
   <form class="todo-header" na-submit="add_todo">
     <input class="input" name="title" placeholder="What needs to be done?" />
     <button class="btn" type="submit">Add</button>
@@ -177,7 +177,7 @@ attachNasc({ app, server, handlers, schemaProvider: appSchema.$defs, ssr: { root
 
 The key rule is simple and consistent:
 
-- Type = the part before the colon in `na-scope="Type:id"` → selects the handler object.
+- Type = taken from `na-type` on the scope container → selects the handler object.
 - Event = the string in `na-submit="…"` or `na-click="…"` → selects the method on that handler.
 - Payload = `FormData` for `na-submit`; for `na-click`, the element’s `data-*` attributes.
 - Return the new state from the handler; the framework diffs and emits patches that update `[na-bind]` and inputs with matching `name`.
@@ -251,7 +251,7 @@ Note: Persistence is pluggable via `attachNasc({ store })`. For production apps,
 ## How to Build This From Scratch
 
 1) Create an HTML page and include `/nasc.js`; add `<body na-connect>`.
-2) Mark sections with `na-scope="Type:id"`, bind fields with `na-bind`, and define actions with `na-submit`/`na-click`.
+2) Mark sections with `na-scope="path"` and `na-type="Type"`, bind fields with `na-bind`, and define actions with `na-submit`/`na-click`.
 3) Write a handler object per type with `mount()` and one method per event.
 4) Provide a schema (`$defs`) for validation and better DX.
 5) On the server, call `attachNasc({ app, server, handlers, schemaProvider: schema.$defs, ssr: { rootDir } })`.
