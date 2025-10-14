@@ -24,7 +24,7 @@ Everything still works—patches apply and events run—but you lose the validat
 
 ## Is there a packaged release on npm?
 
-Not yet. The README explicitly notes that Nasc is a proof of concept and is not currently published. You can still vendor the `nasc.js` file or copy the server package into your workspace while the project evolves.
+Not yet, Nasc is a proof of concept. It has gaps in its functionality and is not ready. You can still vendor the `nasc.js` file or copy the server package into your workspace while the project evolves.
 
 ## Can I mix SSE and WebSockets on the same page?
 
