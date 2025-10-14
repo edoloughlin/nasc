@@ -116,9 +116,16 @@ Add `data-id`, `data-index`, or other contextual values to shape the payload. Ke
 
 Use this when schema inference cannot guess the nested type (for example, when array items use discriminated unions). Combined with typed binds (e.g., `na-bind="Todo:title"`), this keeps validation precise.
 
-## Input `name="prop"`
+## `ng-bind="path"` (Form Controls)
 
-Although not an `na-*` attribute, matching input names are first-class citizens. When the server patches a property, the client updates any matching inputs automatically—even if they lack `na-bind`. The validator also checks these names against the schema and emits overlay errors if a field does not exist. Use this for form fields that submit data but do not need live display.
+Use `ng-bind` on form-associated elements (`input`, `textarea`, `select`) to bind their values and to determine payload keys on `na-submit`.
+
+- Value sync: When patches arrive, inputs with `ng-bind` update to match state (supports dotted and `$` paths).
+- Form payloads: On submit, the client serializes controls with `ng-bind` into `{ [path]: value }` and ignores `name` attributes.
+- Validation: The overlay validates `ng-bind` paths against the active schema and flags unknown fields.
+- SSR: Server-side fill updates input `value` for `ng-bind` (lists hydrate on client).
+
+Note: `name="..."` is not used for binding or serialization.
 
 ## Putting It Together
 

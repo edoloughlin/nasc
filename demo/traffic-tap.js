@@ -92,7 +92,7 @@
   } catch { }
 
   // UI Card
-  let listEl, detailEl, countEl, pause = false, raf, dirty = false;
+  let listEl, detailEl, countEl, splitEl, pause = false, raf, dirty = false;
   function schedule() {
     if (!listEl) return;
     dirty = true;
@@ -180,6 +180,7 @@
     listEl = card.querySelector('#tapList');
     detailEl = card.querySelector('#tapDetail pre') || card.querySelector('#tapDetail');
     countEl = card.querySelector('#tapCount');
+    splitEl = card.querySelector('.traffic-split');
     const pauseBtn = card.querySelector('#tapPauseBtn');
     const clearBtn = card.querySelector('#tapClearBtn');
     if (pauseBtn) pauseBtn.addEventListener('click', () => {
@@ -199,9 +200,15 @@
     function sizeLog() {
       if (!listEl || !detailEl) return;
       try {
-        const top = listEl.getBoundingClientRect().top;
+        // Use the split container if available for a more stable top
+        const anchor = splitEl || listEl;
+        const top = anchor.getBoundingClientRect().top;
         const avail = window.innerHeight - top - 16; // 16px bottom padding
         if (avail > 80) {
+          if (splitEl) {
+            splitEl.style.maxHeight = avail + 'px';
+            splitEl.style.overflow = 'hidden';
+          }
           listEl.style.maxHeight = avail + 'px';
           detailEl.parentElement && (detailEl.parentElement.style.maxHeight = avail + 'px');
           detailEl.style.maxHeight = (avail - 20) + 'px';
@@ -210,6 +217,7 @@
     }
     sizeLog();
     window.addEventListener('resize', sizeLog);
+    window.addEventListener('scroll', sizeLog, { passive: true });
     const ro = new ResizeObserver(() => sizeLog());
     try { ro.observe(document.body); } catch { }
     // Also re-size after render
