@@ -16,7 +16,7 @@ The reference implementation targets Express, but the protocol is framework-agno
 
 ## Can I ship WebSockets in production?
 
-Yes. Install the `ws` package and Nasc will upgrade connections automatically when the client requests it. If `ws` is missing, the server logs a notice and continues with SSE-only transport.
+Nasc is not ready for production yet. It is still a proof of concept and has limitions. But you can ship websockets. Install the `ws` package and Nasc will upgrade connections automatically when the client requests it. If `ws` is missing, the server logs a notice and continues with SSE-only transport.
 
 ## What happens if I deploy without schemas?
 
