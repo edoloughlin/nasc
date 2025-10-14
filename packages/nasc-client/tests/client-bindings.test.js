@@ -136,7 +136,7 @@ test('bindUpdate patches update text nodes and input values', async () => {
   const { document, fetchCalls, MockEventSource } = setupDom(`
     <div na-scope="1" na-type="Todo">
       <span class="title" na-bind="title"></span>
-      <input type="text" name="title" />
+      <input type="text" ng-bind="title" />
     </div>
   `);
 
@@ -170,7 +170,7 @@ test('bindUpdate patches update text nodes and input values', async () => {
 
   const titleSpan = document.querySelector('.title');
   assert.strictEqual(titleSpan.textContent, 'Pay bills');
-  const titleInput = document.querySelector('input[name="title"]');
+  const titleInput = document.querySelector('input[ng-bind="title"]');
   assert.strictEqual(titleInput.value, 'Pay bills');
 });
 
@@ -221,6 +221,32 @@ test('array bindUpdate hydrates keyed templates with na-each', async () => {
   const template = document.querySelector('ul > template');
   assert.ok(template, 'template anchor should remain in the DOM');
   assert.strictEqual(template.previousElementSibling.getAttribute('na-key-val'), 'b');
+});
+
+test('array bindUpdate does not render [object Object] text in containers', async () => {
+  const { document, MockEventSource } = setupDom(`
+    <div na-scope="1" na-type="Todo">
+      <ul class="list" na-bind="items">
+        <template na-each="items" na-key="id">
+          <li><span na-bind="label"></span></li>
+        </template>
+      </ul>
+    </div>
+  `);
+
+  const { connect } = await loadClientModule();
+  connect({});
+  const stream = MockEventSource.instances[0];
+  stream.emitOpen();
+
+  stream.emitMessage([
+    { action: 'bindUpdate', instance: '1', type: 'Todo', prop: 'items', value: [ { id: 'a', label: 'Alpha' } ] },
+  ]);
+
+  const list = document.querySelector('ul.list');
+  const text = list.textContent || '';
+  assert.ok(text.includes('Alpha'), 'list should render item label');
+  assert.ok(!text.includes('[object Object]'), 'list container should not contain [object Object]');
 });
 
 test('typed na-bind expressions receive updates alongside untyped binds', async () => {
@@ -449,6 +475,63 @@ test('schema patches validate bindings with scoped inference', async () => {
   );
 });
 
+test('validation allows top-level ng-bind for child item field', async () => {
+  const { document, MockEventSource } = setupDom(`
+    <div na-scope="1" na-type="Todo">
+      <!-- Top-level control bound to child item field name -->
+      <input ng-bind="label" />
+      <ul>
+        <template na-each="items" na-key="id" na-type="TodoItem">
+          <li><span na-bind="label"></span></li>
+        </template>
+      </ul>
+    </div>
+  `);
+
+  const { connect } = await loadClientModule();
+  connect({});
+  const stream = MockEventSource.instances[0];
+
+  const todoItemSchema = {
+    type: 'object',
+    properties: {
+      label: { type: 'string' },
+      done: { type: 'boolean' },
+    },
+  };
+
+  stream.emitMessage([
+    { action: 'schema', type: 'TodoItem', schema: todoItemSchema },
+    {
+      action: 'schema',
+      type: 'Todo',
+      schema: {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          items: {
+            type: 'array',
+            items: { $ref: '#/$defs/TodoItem' },
+          },
+        },
+        $defs: { TodoItem: todoItemSchema },
+      },
+    },
+  ]);
+
+  const originalError = console.error;
+  const captured = [];
+  console.error = (...args) => { captured.push(args.map((arg) => String(arg)).join(' ')); };
+  cleanupFns.push(() => { console.error = originalError; });
+
+  await flushAsync(4);
+
+  assert.ok(
+    !captured.some((msg) => msg.includes('Unknown field Todo.label')),
+    'top-level ng-bind="label" should be treated as event-only and not error'
+  );
+});
+
 test('SSE transport falls back to WebSocket after repeated errors', async () => {
   const { document, MockEventSource } = setupDom(`
     <div na-scope="1" na-type="Todo">
@@ -606,7 +689,10 @@ test('absolute $ scope resolves relative binds and lists', async () => {
 test('events from $ scope map to concrete instance', async () => {
   const { document, fetchCalls, MockEventSource } = setupDom(`
     <div na-scope="$user" na-type="App">
-      <button na-click="ping"></button>
+      <form na-submit="ping">
+        <input ng-bind="$user.name" value="Alice" />
+        <button type="submit">Send</button>
+      </form>
     </div>
   `);
   const { connect } = await loadClientModule();
@@ -615,12 +701,13 @@ test('events from $ scope map to concrete instance', async () => {
   stream.emitOpen();
   // First call is mount
   assert.ok(fetchCalls.length >= 1);
-  // Trigger delegated click on document with target set
-  const btn = document.querySelector('button[na-click]');
-  document.dispatchEvent({ type: 'click', target: btn, preventDefault() {} });
-  // Next call should be click event to instance 'root'
+  // Trigger form submit
+  const form = document.querySelector('form[na-submit]');
+  document.dispatchEvent({ type: 'submit', target: form, preventDefault() {} });
+  // Next call should be submit event to instance 'root'
   const last = JSON.parse(fetchCalls[fetchCalls.length - 1].opts.body);
   assert.equal(last.event, 'ping');
   assert.equal(last.type, 'App');
   assert.equal(last.instance, 'root');
+  assert.equal(last.payload['$user.name'], 'Alice');
 });

@@ -161,7 +161,7 @@ export function connect(arg) {
           if (!validateBinding(schema, p.prop, p.value)) {
             const containerEl = document.querySelector(`[data-na-instance="${p.instance}"]`) || document.querySelector(`[na-scope="${p.instance}"]`);
             const typedSel = type ? `[na-bind="${type}:${p.prop}"]` : '';
-            const el = containerEl && (containerEl.querySelector(`[na-bind="${p.prop}"]`) || containerEl.querySelector(typedSel) || containerEl.querySelector(`[name="${p.prop}"]`));
+            const el = containerEl && (containerEl.querySelector(`[na-bind="${p.prop}"]`) || containerEl.querySelector(typedSel) || containerEl.querySelector(`[ng-bind="${p.prop}"]`));
             reportValidationError(`Schema mismatch for ${type}.${p.prop}`, el || containerEl || null);
           }
           validatedOnce.add(key);
@@ -176,6 +176,7 @@ export function connect(arg) {
           const root = { [p.prop]: p.value };
 
           // Handle arrays for all templates (supports relative and absolute paths)
+          let handledList = false;
           container.querySelectorAll('template[na-each]').forEach((tmpl) => {
             const expr = tmpl.getAttribute('na-each') || '';
             const { segments } = parsePathExpression(expr, container);
@@ -184,9 +185,13 @@ export function connect(arg) {
             const items = pathGet(root, segments);
             if (Array.isArray(items)) {
               const listRoot = tmpl.parentElement;
-              if (listRoot) applyKeyedDiff(listRoot, items, tmpl);
+              if (listRoot) {
+                applyKeyedDiff(listRoot, items, tmpl);
+                handledList = true;
+              }
             }
           });
+          // Continue to other binds; array values will be ignored for text nodes below
 
           // Update simple text/value bindings (supports nested and absolute paths; supports Type:prop prefix)
           container.querySelectorAll('[na-bind]').forEach((el) => {
@@ -196,6 +201,7 @@ export function connect(arg) {
             if (segments[0] !== p.prop) return;
             const val = pathGet(root, segments);
             if (typeof val === 'undefined') return; // avoid clobbering templated item bindings
+            if (Array.isArray(val)) return; // don't write arrays as [object Object]
             const tag = el.tagName.toLowerCase();
             if (tag === 'input') {
               const it = el.getAttribute('type');
@@ -211,10 +217,10 @@ export function connect(arg) {
             }
           });
 
-          // Update inputs with matching name (supports nested and absolute paths)
-          container.querySelectorAll('input[name], textarea[name], select[name]').forEach((el) => {
-            const name = el.getAttribute('name') || '';
-            const { segments } = parsePathExpression(name, container);
+          // Update inputs with matching ng-bind (supports nested and absolute paths)
+          container.querySelectorAll('input[ng-bind], textarea[ng-bind], select[ng-bind]').forEach((el) => {
+            const expr = el.getAttribute('ng-bind') || '';
+            const { segments } = parsePathExpression(expr, container);
             if (!segments.length) return;
             if (segments[0] !== p.prop) return;
             const val = pathGet(root, segments);
@@ -309,7 +315,20 @@ export function connect(arg) {
       reportValidationError(`[nasc] Missing na-type for event scope '${instance}'`, container || null);
       return;
     }
-    const payload = Object.fromEntries(new FormData(form).entries());
+    // Build payload from ng-bind controls only
+    const payload = {};
+    form.querySelectorAll('input[ng-bind], textarea[ng-bind], select[ng-bind]').forEach((ctl) => {
+      const key = ctl.getAttribute('ng-bind') || '';
+      if (!key) return;
+      let val;
+      const it = ctl.getAttribute('type');
+      if (it && it.toLowerCase() === 'checkbox') {
+        val = !!ctl.checked;
+      } else {
+        val = 'value' in ctl ? ctl.value : undefined;
+      }
+      if (typeof val !== 'undefined') payload[key] = val;
+    });
     transport.send({
       event: form.getAttribute("na-submit"),
       instance,
@@ -539,12 +558,13 @@ function validateDeclaredBindings(instance, type) {
     }
   });
 
-  // name attributes on form controls
-  container.querySelectorAll('input[name], textarea[name], select[name]').forEach((el) => {
-    const prop = el.getAttribute('name');
-    if (!prop) return;
-    const topProp = (prop[0] === '$' ? prop.slice(1) : prop).split('.')[0];
+  // ng-bind on form controls
+  container.querySelectorAll('input[ng-bind], textarea[ng-bind], select[ng-bind]').forEach((el) => {
+    const expr = el.getAttribute('ng-bind');
+    if (!expr) return;
     const explicitType = el.getAttribute('na-type');
+    const raw = expr[0] === '$' ? expr.slice(1) : expr;
+    const topProp = (raw.split('.')[0] || '').trim();
     let targetType = explicitType || type;
     const tmpl = el.closest('template[na-each]');
     if (!explicitType && tmpl && tmpl.hasAttribute('na-type')) {
@@ -555,7 +575,6 @@ function validateDeclaredBindings(instance, type) {
       const ref = parentPropSchema && parentPropSchema.items && parentPropSchema.items.$ref;
       if (ref && ref.startsWith('#/$defs/')) targetType = ref.slice('#/$defs/'.length);
     }
-    // If cloned out of a template, prefer ancestor scope marker
     if (!explicitType && !tmpl) {
       const scoped = el.closest('[data-na-type-scope]');
       if (scoped) {
@@ -565,10 +584,10 @@ function validateDeclaredBindings(instance, type) {
     }
     const targetSchema = (window.__NASC_SCHEMAS && window.__NASC_SCHEMAS[targetType]) || null;
     const targetProps = (targetSchema && targetSchema.properties) || {};
-    if (!Object.prototype.hasOwnProperty.call(targetProps, topProp)) {
-      // Heuristic: if this is a top-level input (not in a template) and the prop
-      // exists on a child item type used by a template in this container, treat it as
-      // an event-only field (e.g., add_todo.title) and do not flag an error.
+    if (!topProp || !Object.prototype.hasOwnProperty.call(targetProps, topProp)) {
+      // Heuristic: if this top-level control is not inside a template and
+      // the prop exists on a child item type used by a template in this container,
+      // treat it as an event-only field and do not flag an error.
       if (!tmpl && !explicitType) {
         const childTypes = [];
         container.querySelectorAll('template[na-each]').forEach((t) => {
@@ -584,13 +603,19 @@ function validateDeclaredBindings(instance, type) {
         for (const ct of childTypes) {
           const cs = window.__NASC_SCHEMAS && window.__NASC_SCHEMAS[ct];
           const cp = (cs && cs.properties) || {};
-          if (Object.prototype.hasOwnProperty.call(cp, prop)) {
-            // Consider this an event payload aimed at child creation; skip error.
-            return;
+          if (Object.prototype.hasOwnProperty.call(cp, topProp)) {
+            return; // skip error; likely event-only control (e.g., add_todo.title)
           }
         }
       }
       reportValidationError(`Unknown field ${targetType}.${topProp}`, el);
+    }
+  });
+
+  // Flag use of name without ng-bind
+  container.querySelectorAll('input[name], textarea[name], select[name]').forEach((el) => {
+    if (!el.hasAttribute('ng-bind')) {
+      reportValidationError('Use ng-bind for form fields (name is not supported)', el);
     }
   });
 }

@@ -26,11 +26,11 @@
           <form class="form" na-submit="save_profile">
             <div class="form-group">
               <label for="name">Name</label>
-              <input id="name" class="input" name="name" placeholder="Your name" />
+              <input id="name" class="input" ng-bind="name" placeholder="Your name" />
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <input id="email" class="input" name="email" type="email" placeholder="you@example.com" />
+              <input id="email" class="input" ng-bind="email" type="email" placeholder="you@example.com" />
             </div>
             <button class="btn" type="submit">Save profile</button>
           </form>
@@ -41,7 +41,7 @@
           <div class="scope">Scope <code>TodoList:my-list</code></div>
 
           <form class="todo-header" na-submit="add_todo">
-            <input class="input" name="title" placeholder="What needs to be done?" />
+            <input class="input" ng-bind="title" placeholder="What needs to be done?" />
             <button class="btn" type="submit">Add</button>
           </form>
 
