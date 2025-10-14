@@ -7,7 +7,7 @@ permalink: /
 
 # Nasc Documentation
 
-Nasc is a "live HTML" framework that keeps your markup simple while letting the server drive state and logic. It streams DOM updates from the backend to the browser over Server-Sent Events (SSE) by default and can transparently upgrade to WebSockets for bidirectional scenarios.
+Nasc is a "live HTML" **proof of concept** framework that keeps your markup simple while letting the server drive state and logic. It streams DOM updates from the backend to the browser over Server-Sent Events (SSE) by default and can transparently upgrade to WebSockets for bidirectional scenarios.
 
 ## Why Nasc?
 
