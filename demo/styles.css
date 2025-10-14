@@ -161,6 +161,12 @@ a:hover { filter: brightness(1.1); }
 .traffic-log .meta { display: block; color: var(--muted); margin-bottom: 4px; font-size: 11px; }
 .traffic-log pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
 .traffic-controls { display: inline-flex; align-items: center; gap: 6px; }
+.traffic-controls .icon-btn {
+  font-size: 20px;
+  min-width: 36px;
+  height: 32px;
+  padding: 6px 12px;
+}
 
 /* Hide up button for first item and down button for last item */
 /* Ignore the <template> node when determining first/last item */
@@ -175,6 +181,8 @@ a:hover { filter: brightness(1.1); }
   background: #0f1421;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
+  /* Ensure a minimum visual size ~ 3 rows (timestamp height + vertical padding) */
+  min-height: calc(3 * (1.4em + 16px));
   overflow: auto;
   font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
