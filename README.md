@@ -8,6 +8,10 @@ Nasc is a proof-of-concept framework for building reactive user interfaces with 
 
 *Note:* this is currently a PoC. There is currently no packaged version of this project.
 
+## It's not ready yet!
+
+The chances of you finding this project are vanishingly small but, just in case, note that it not ready for anything other than experimental use. Things can, and will, change without notice. Your stuff will break.
+
 ## Project Philosophy
 
 Taking inspiration from HTMX, the core idea is to keep the client as simple as possible. The server is the source of truth for both state and logic. The client sends events to the server, and the server responds with fine-grained state updates. These are sent over SSE (or WS) in a similar fashion to Datastar, but sending arbitrary HTML is not supported by design.
