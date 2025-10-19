@@ -9,6 +9,10 @@ permalink: /
 
 Nasc is a "live HTML" **proof of concept** framework that keeps your markup simple while letting the server drive state and logic. It streams DOM updates from the backend to the browser over Server-Sent Events (SSE) by default and can transparently upgrade to WebSockets for bidirectional scenarios.
 
+## It's not ready yet!
+
+The chances of you finding this project are vanishingly small but, just in case, note that it not ready for anything other than experimental use. Things can, and will, change without notice. Your stuff will break.
+
 ## Why Nasc?
 
 - **Minimal client footprint.** The browser loads a generic `nasc.js` client that knows how to bind data, patch the DOM, and validate schemas—nothing more.
